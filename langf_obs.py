@@ -1,8 +1,16 @@
-from langfuse import observe, get_client
+from langfuse import observe, get_client, Langfuse
 from dotenv import load_dotenv
+import os
 
 
 load_dotenv()
+
+# # Replace the following lines with get_client() if you have already set up the Langfuse client in your environment
+# langfuse = Langfuse(
+#     secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
+#     public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
+#     base_url=os.getenv("LANGFUSE_BASE_URL")
+# )
 
 
 @observe
@@ -14,7 +22,7 @@ def verify_connection():
     client.flush()
 
     print("Connection to Langfuse is successful!")
-    print("check your dashboard at https://app.langfuse.com/dashboard")
+    print("check your dashboard at https://us.cloud.langfuse.com/")
 
 
 @observe

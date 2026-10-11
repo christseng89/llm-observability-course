@@ -8,6 +8,8 @@ import tiktoken
 from dataclasses import dataclass
 from typing import Dict
 
+from common import print_section
+
 @dataclass
 class ModelPricing:
     name: str
@@ -22,13 +24,14 @@ MODELS = {
     "claude-3.5-haiku": ModelPricing("claude-3.5-haiku", 0.25, 1.25),
 }
 
+# tiktoken 是 OpenAI 开源的 Python 分词(tokenizer)库,用来把文本切分成 token,并统计 token 数量。
 def count_tokens(text: str, model: str = "gpt-4o") -> int:
     """Count tokens for a given text."""
     try:
         enc = tiktoken.encoding_for_model(model)
     except KeyError:
         enc = tiktoken.get_encoding("cl100k_base")
-    return len(enc.encode(text))
+    return len(enc.encode(text)) # token 數量
 
 def calculate_cost(
     input_text: str,
@@ -70,16 +73,16 @@ if __name__ == "__main__":
 
     full_input = system_prompt + "\n\n" + user_message
 
-    print("Cost Comparison Across Models")
-    print("=" * 50)
+    print_section("Cost Comparison Across Models")
 
     for model_name in MODELS:
         result = calculate_cost(full_input, response, model_name)
-        print(f"\n{model_name}:")
-        print(f"  Input tokens: {result['input_tokens']}")
-        print(f"  Output tokens: {result['output_tokens']}")
-        print(f"  Total cost: ${result['total_cost']:.6f}")
+        print(f"\n\033[92m{model_name}:\033[0m")
+        print(f"- Input tokens: {result['input_tokens']}")
+        print(f"- Output tokens: {result['output_tokens']}")
+        print(f"- Total tokens: {result['total_tokens']}")
+        print(f"- Total cost: ${result['total_cost']:.6f}")
 
         # Project to 1M requests
         monthly_cost = result['total_cost'] * 1_000_000
-        print(f"  Cost at 1M requests/month: ${monthly_cost:,.2f}")
+        print(f"\033[93mCost at 1M requests/month: ${monthly_cost:,.2f}\033[0m")

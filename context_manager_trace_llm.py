@@ -1,68 +1,80 @@
 """
-Langfuse API Level 3: Context Manager (Langfuse v3)
+Langfuse API Level 3: Context Manager (Langfuse v4)
 
 This approach uses context managers to explicitly define trace hierarchy.
 You have fine-grained control over spans and generations.
 """
 
-from langfuse import Langfuse
-from openai import OpenAI
+from langfuse import Langfuse, propagate_attributes
+from langfuse.openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 client = OpenAI()
 langfuse = Langfuse()
 
+name = "cm_trace"
 expression = "123 + 456 * 2"
 
-# Create a trace and use context managers for spans/generations
-with langfuse.start_as_current_span(name="calculator_context_manager") as trace:
+SYSTEM_PROMPT = (
+    "You are a very accurate calculator. "
+    "Evaluate the expression following standard operator precedence "
+    "(multiplication and division before addition and subtraction). "
+    "Work step by step, computing each operation explicitly. "
+    "Then, on the last line, write 'ANSWER: <number>' with only the final number. "
+    "Example for '2 + 3 * 4':\n"
+    "3 * 4 = 12\n"
+    "2 + 12 = 14\n"
+    "ANSWER: 14"
+)
+messages = [
+    {"role": "system", "content": SYSTEM_PROMPT},
+    {"role": "user", "content": expression},
+]
 
-    # Add a span for preprocessing
-    with langfuse.start_as_current_span(name="input_validation") as validation_span:
-        langfuse.update_current_span(
+# propagate_attributes must wrap ALL spans/generations: only observations
+# created inside this context inherit the attributes.
+with propagate_attributes(
+    user_id="user_123",
+    tags=["calculator", name],
+    metadata={"project": name + "_project"},
+):
+    # Create a trace and use context managers for spans/generations
+    with langfuse.start_as_current_observation(
+        name=name + "_calculator_span",
+        as_type="span",  # Span
+    ) as trace:
+        # Add a span for preprocessing
+        with langfuse.start_as_current_observation(
+            name=name + "_validation_span",
+            as_type="span",  # Span
+        ) as validation_span:
+            langfuse.update_current_span(
+                input={"expression": expression},
+                output={"status": "valid"},
+            )
+
+        # Wrap the LLM call in a span: langfuse.openai already creates the
+        # generation (model, usage, cost) automatically as a child of it.
+        with langfuse.start_as_current_observation(
+            name=name + "_llm_span",
+            as_type="span",  # Span
+        ):
+            completion = client.chat.completions.create(
+                name=name + "_llm_generation",
+                model="gpt-4o-mini",
+                messages=messages,
+                temperature=0,
+            )
+            raw_output = completion.choices[0].message.content
+            # Take the final number from the "ANSWER: <number>" line
+            result = raw_output.rsplit("ANSWER:", 1)[-1].strip()
+
+        # Update trace with final output
+        trace.update(
             input={"expression": expression},
-            output={"status": "valid"},
+            output={"result": result},
         )
-
-    # Add a generation for the LLM call
-    with langfuse.start_as_current_generation(
-        name="llm_calculation",
-        model="gpt-4o-mini",
-        input=[
-            {
-                "role": "system",
-                "content": "You are a very accurate calculator. You output only the result of the calculation.",
-            },
-            {"role": "user", "content": expression},
-        ],
-    ) as generation:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a very accurate calculator. You output only the result of the calculation.",
-                },
-                {"role": "user", "content": expression},
-            ],
-        )
-        result = completion.choices[0].message.content
-
-        langfuse.update_current_generation(
-            output=result,
-            usage_details={
-                "input": completion.usage.prompt_tokens,
-                "output": completion.usage.completion_tokens,
-            },
-            metadata={"project": "context_manager_example"},
-        )
-
-    # Update trace with final output
-    langfuse.update_current_trace(
-        output={"result": result},
-        tags=["calculator", "context_manager"],
-    )
 
 print(f"{expression} = {result}")
 

@@ -58,7 +58,7 @@ def load_markdown_docs(docs_dir: str) -> List:
     )
     documents = loader.load()
 
-    # Update current span with metadata (Langfuse SDK v3)
+    # Update current span with metadata (Langfuse SDK v4)
     get_client().update_current_span(
         metadata={"docs_loaded": len(documents), "docs_dir": docs_dir}
     )

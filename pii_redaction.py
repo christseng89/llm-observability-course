@@ -75,7 +75,7 @@ def secure_llm_call(prompt: str) -> str:
 
     response = call_claude(prompt)
 
-    # Manually log redacted versions using v3 API
+    # Manually log redacted versions using v4 API
     langfuse.update_current_span(
         input=redactor.redact(prompt),
         output=redactor.redact(response.text),

@@ -3,7 +3,7 @@
 Production-Ready LLM Wrapper with Observability
 Use this as a starting point for your applications
 
-Updated for Langfuse Python SDK v3 (Decorator-based API)
+Updated for Langfuse Python SDK v4 (Decorator-based API)
 """
 
 from anthropic import Anthropic
@@ -11,7 +11,7 @@ from openai import OpenAI
 from langfuse import observe, Langfuse
 from dotenv import load_dotenv
 import time
-from typing import Optional, Dict, Any
+# from typing import Optional, Dict, Any
 from dataclasses import dataclass
 
 load_dotenv()
@@ -87,7 +87,7 @@ def call_claude(
         model, response.usage.input_tokens, response.usage.output_tokens
     )
 
-    # Update current span with model-specific info using v3 API
+    # Update current span with model-specific info using v4 API
     langfuse.update_current_span(
         metadata={
             **(metadata or {}),
@@ -139,7 +139,7 @@ def call_openai(
     output_tokens = response.usage.completion_tokens
     cost = calculate_cost(model, input_tokens, output_tokens)
 
-    # Update current span with model-specific info using v3 API
+    # Update current span with model-specific info using v4 API
     langfuse.update_current_span(
         metadata={
             **(metadata or {}),

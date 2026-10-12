@@ -8,6 +8,8 @@ pyenv global 3.12.10
 pyenv local 3.12.10
 
 uv sync
+uv add --upgrade langfuse
+uv run python -c "import importlib.metadata; print(importlib.metadata.version('langfuse'))"
 ```
 ---
 
@@ -873,3 +875,50 @@ Langfuse 支援從單次 LLM Call 到整個 Conversation，再到不同功能及
 > 註：上述金額為示例中的 LLM 成本。若要計算完整的營運成本，還需納入 Embedding、Vector Database、外部工具與基礎設施等費用；Tags 和 User ID 是成本分析維度，並非額外的成本層級。
 
 ---
+
+# Hands on LLM
+
+```bash
+uv run first_trace_llm.py
+```
+
+---
+
+# API Levels（Langfuse API 整合層級）
+
+| # | API Level                 | Integration Method           | 中文說明                                                                   |
+| - | ------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| 1 | Decorator-based（裝飾器方式）    | `@observe()` on functions    | 使用裝飾器自動追蹤 Python 函式，包括執行時間、輸入及輸出。                               |
+| 2 | Context Manager（上下文管理器）   | `with langfuse.start_as_current_observation()`  | 自動建立及結束 Observation，管理 Parent-Child 關係，支援 Span、Generation 等巢狀追蹤。                     |
+| 3 | Low-level SDK（底層 SDK）     | `langfuse.start_observation()`  | 手動建立、更新和結束 Observation，可精確控制生命週期及父子關係。                          |
+| 4 | Drop-in Replacement（直接替換） | `from langfuse.openai import openai`            | 替換標準 OpenAI SDK Import，自動記錄 LLM API Calls、Token Usage、Latency 及 Cost。 |
+
+## Key Takeaway（核心概念）
+
+四種整合方式的主要差異在於自動化程度與控制粒度。
+
+- Decorator-based： 適合快速整合既有 Python 函式。
+- Context Manager： 適合需要明確管理 Span 範圍的流程。
+- Low-level SDK： 適合複雜的 AI Agent、客製化 Tracing 及進階控制。
+- Drop-in Replacement： 適合已經使用 OpenAI Python SDK 的應用程式，以較少程式碼快速導入 Observability。
+
+建議： 一般 Python / FastAPI / LangGraph 專案可以優先使用 `@observe()`；若需要細緻控制 Agent、Tool Calls、RAG Retrieval 的父子層級，再搭配 Context Manager 或底層 SDK。
+
+> 注意：圖片中的 `with langfuse.trace`、`langfuse.trace()` 是教材中的舊式或示意寫法。新版 Langfuse Python SDK 已採用 OpenTelemetry-based API，例如 `langfuse.start_as_current_observation()` 與 `langfuse.start_observation()`；實作時應依目前安裝的 SDK 版本選擇正確 API。
+
+---
+
+## Hands on
+
+```bash
+uv run first_trace_llm.py
+
+# Decorator-based
+uv run decorator_trace_llm.py 
+
+# Context Managment
+uv run context_manager_trace_llm.py
+
+# Low-level SDK
+uv run low_level_trace_llm.py 
+```

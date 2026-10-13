@@ -9,4 +9,3 @@ def save_graph_png(app, png_file: str) -> None:
     with open(png_file, "wb") as f:
         f.write(png_bytes)
     print(f"\033[93mGraph saved to {png_file}\033[0m")
-

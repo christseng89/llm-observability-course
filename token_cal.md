@@ -31,6 +31,7 @@ import tiktoken
 from dataclasses import dataclass
 from typing import Dict
 
+
 @dataclass
 class ModelPricing:
     name: str
@@ -106,9 +107,7 @@ def count_tokens(text: str, model: str = "gpt-4o") -> int:
 
 ```python
 def calculate_cost(
-    input_text: str,
-    output_text: str,
-    model: str = "gpt-4o"
+    input_text: str, output_text: str, model: str = "gpt-4o"
 ) -> Dict[str, float]:
     """Calculate the cost of an LLM interaction."""
 
@@ -174,7 +173,7 @@ if __name__ == "__main__":
         print(f"  Total cost: ${result['total_cost']:.6f}")
 
         # Project to 1M requests
-        monthly_cost = result['total_cost'] * 1_000_000
+        monthly_cost = result["total_cost"] * 1_000_000
         print(f"  Cost at 1M requests/month: ${monthly_cost:,.2f}")
 ```
 

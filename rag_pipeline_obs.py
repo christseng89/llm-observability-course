@@ -1,22 +1,31 @@
 """rag_pipeline_obs.py - Complete RAG Pipeline with Langfuse Observability
 
 Required packages:
-    pip install langfuse chromadb sentence-transformers anthropic langchain langchain-community
+    pip install langfuse chromadb sentence-transformers anthropic langchain-core langchain-text-splitters python-dotenv
 """
 
-from langfuse import observe, Langfuse, get_client
-from dotenv import load_dotenv
-from typing import Optional, Dict, Any, List
-import chromadb
-import anthropic
-import os
+import sys
 
-# LangChain imports for document loading
-from langchain_community.document_loaders import DirectoryLoader, TextLoader
+from langfuse import observe, get_client, propagate_attributes
+from dotenv import load_dotenv
+from typing import Any
+import chromadb
+
+from anthropic import Anthropic
+from pathlib import Path
+
+# LangChain document format and text splitting
+from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 
+from common import print_section
+
 load_dotenv()
+
+PROJECT_NAME = "rag_pipeline_obs"
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"  # dim 384
+MODEL = "claude-haiku-5-5"  # or "claude-sonnet-4-6" for more complex tasks
 
 # Initialize chromadb with persistent storage
 chroma = chromadb.PersistentClient(path="./chroma_db")
@@ -25,38 +34,41 @@ collection = chroma.get_or_create_collection(
 )
 
 # initialize embedding model once
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")  # dim 384
+embedding_model = SentenceTransformer(EMBEDDING_MODEL)
 
 
 # =============================================================================
 # DOCUMENT INDEXING PIPELINE
 # =============================================================================
 @observe
-def load_and_index_documents(docs_dir: str = "./docs") -> int:
+def rag_load_and_index_docs(docs_dir: str = "./docs") -> int:
 
-    documents = load_markdown_docs(docs_dir)
+    documents = rag_load_markdown_docs(docs_dir)
     if not documents:
         return 0
 
-    chunks = chunk_documents(documents)
-    return index_chunks(chunks)
+    chunks = rag_chunk_docs(documents)
+    return rag_index_chunks(chunks)
 
 
 @observe()
-def load_markdown_docs(docs_dir: str) -> List:
-    """Load all markdown files from directory using LangChain."""
-    if not os.path.exists(docs_dir):
+def rag_load_markdown_docs(docs_dir: str) -> list[Document]:
+    """Load UTF-8 markdown files recursively into LangChain documents."""
+    directory = Path(docs_dir)
+    if not directory.exists():
         raise FileNotFoundError(f"Docs directory not found: {docs_dir}")
+    if not directory.is_dir():
+        raise NotADirectoryError(f"Docs path is not a directory: {docs_dir}")
 
-    # Use TextLoader for .md files (simpler, fewer dependencies)
-    loader = DirectoryLoader(
-        docs_dir,
-        glob="**/*.md",
-        loader_cls=TextLoader,
-        loader_kwargs={"encoding": "utf-8"},
-        show_progress=True,
-    )
-    documents = loader.load()
+    documents = [
+        Document(
+            page_content=path.read_text(encoding="utf-8"),
+            metadata={"source": str(path)},
+        )
+        for path in sorted(directory.rglob("*.md"))
+        if path.is_file()
+        and not any(part.startswith(".") for part in path.relative_to(directory).parts)
+    ]
 
     # Update current span with metadata (Langfuse SDK v4)
     get_client().update_current_span(
@@ -66,9 +78,9 @@ def load_markdown_docs(docs_dir: str) -> List:
 
 
 @observe()
-def chunk_documents(
-    documents: List, chunk_size: int = 1000, chunk_overlap: int = 200
-) -> List:
+def rag_chunk_docs(
+    documents: list[Document], chunk_size: int = 1000, chunk_overlap: int = 200
+) -> list[Document]:
     """Split documents into smaller chunks for retrieval."""
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
@@ -83,8 +95,11 @@ def chunk_documents(
     return chunks
 
 
+# rag_index_chunks() does both:
+# 1. Embedding: converts each chunk’s text into a numeric vector using embedding_model.encode().
+# 2. Indexing: stores the vector, text, ID, and source metadata in ChromaDB using collection.upsert().
 @observe()
-def index_chunks(chunks: List) -> int:
+def rag_index_chunks(chunks: list[Document]) -> int:
     """Create embeddings and store in ChromaDB."""
     ids, documents, metadatas, embeddings = [], [], [], []
 
@@ -100,7 +115,7 @@ def index_chunks(chunks: List) -> int:
     )
 
     get_client().update_current_span(
-        metadata={"chunks_indexed": len(chunks), "embedding_model": "all-MiniLM-L6-v2"}
+        metadata={"chunks_indexed": len(chunks), "embedding_model": EMBEDDING_MODEL}
     )
     return len(chunks)
 
@@ -108,23 +123,21 @@ def index_chunks(chunks: List) -> int:
 # =============================================================================
 # RAG QUERY PIPELINE
 # =============================================================================
-
-
 @observe()
 def rag_pipeline(query: str) -> str:
     """
     Complete RAG pipeline with full observability.
     Each step becomes a span in the trace.
     """
-    query_embedding = embed_query(query)
-    chunks = retrieve_chunks(query_embedding)
-    context = build_context(chunks)
-    response = generate_response(query, context)
+    query_embedding = rag_embed_query(query)
+    chunks = rag_retrieve_chunks(query_embedding)
+    context = rag_build_context(chunks)
+    response = rag_response_claude(query, context)
     return response
 
 
 @observe()
-def embed_query(query: str) -> List[float]:
+def rag_embed_query(query: str) -> list[float]:
     """Embed the user query."""
     embedding = embedding_model.encode(query).tolist()
 
@@ -135,7 +148,7 @@ def embed_query(query: str) -> List[float]:
 
 
 @observe()
-def retrieve_chunks(embedding: List[float], top_k: int = 5) -> List[Dict]:
+def rag_retrieve_chunks(embedding: list[float], top_k: int = 5) -> list[dict[str, Any]]:
     """Retrieve relevant document chunks from ChromaDB."""
     results = collection.query(
         query_embeddings=[embedding],
@@ -166,7 +179,7 @@ def retrieve_chunks(embedding: List[float], top_k: int = 5) -> List[Dict]:
 
 
 @observe()
-def build_context(chunks: List[Dict]) -> str:
+def rag_build_context(chunks: list[dict[str, Any]]) -> str:
     """Assemble retrieved chunks into context string."""
     if not chunks:
         return "No relevant context found."
@@ -174,7 +187,7 @@ def build_context(chunks: List[Dict]) -> str:
     context_parts = []
     for i, chunk in enumerate(chunks):
         source = chunk["metadata"].get("source", "unknown")
-        context_parts.append(f"[Source {i+1} - {source}]: {chunk['content']}")
+        context_parts.append(f"[Source {i + 1} - {source}]: {chunk['content']}")
 
     context = "\n\n".join(context_parts)
 
@@ -184,10 +197,10 @@ def build_context(chunks: List[Dict]) -> str:
     return context
 
 
-@observe(as_type="generation")
-def generate_response(query: str, context: str) -> str:
-    """Generate response using Claude with token tracking."""
-    client = anthropic.Anthropic()
+@observe()
+def rag_response_claude(query: str, context: str) -> str:
+    """Wrap a Claude generation in a span with token tracking."""
+    client = Anthropic()
 
     prompt = f"""Use the following context to answer the question.
 If the context doesn't contain relevant information, say so.
@@ -199,39 +212,62 @@ Question: {query}
 
 Answer:"""
 
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": prompt}],
-    )
-
-    # Log generation details including token usage
-    get_client().update_current_generation(
-        model="claude-sonnet-4-20250514",
-        usage_details={
-            "input_tokens": response.usage.input_tokens,
-            "output_tokens": response.usage.output_tokens,
-        },
+    model = MODEL
+    messages = [{"role": "user", "content": prompt}]
+    with get_client().start_as_current_observation(
+        as_type="generation",
+        name="Claude-generation",
+        model=model,
+        input=messages,
+        model_parameters={"max_tokens": 1024},
         metadata={"prompt_length": len(prompt)},
-    )
-    return response.content[0].text
+    ) as generation:
+        response = client.messages.create(
+            model=model,
+            max_tokens=1024,
+            messages=messages,
+        )
+        content = "".join(
+            block.text for block in response.content if block.type == "text"
+        )
+        generation.update(
+            model=response.model,
+            output=content,
+            usage_details={
+                "input": response.usage.input_tokens,
+                "output": response.usage.output_tokens,
+            },
+        )
+    return content
 
 
 if __name__ == "__main__":
-    # Step 1: Index documents (run once or when docs change)
-    print("Indexing documents from ./docs folder...")
-    try:
-        num_indexed = load_and_index_documents("./docs")
-        print(f"Indexed {num_indexed} chunks")
-    except FileNotFoundError as e:
-        print(f"Error: {e}")
-        print("Create a 'docs' folder with .md files first.")
-        exit(1)
+    print_section("Indexing documents from ./docs folder to RAG...")
 
-    # Step 2: Query the RAG pipeline
-    print("\nQuerying RAG pipeline...")
-    result = rag_pipeline("What is Llamaindex and how do I set up?")
-    print(f"\nResponse:\n{result}")
+    with propagate_attributes(
+        user_id="user_123",
+        tags=["observability", "rag_pipeline"],
+        metadata={"project": PROJECT_NAME},
+    ):
+        # Step 1: Index documents (run once or when docs change)
+        try:
+            num_indexed = rag_load_and_index_docs("./docs")
+            print(f"\033[32mIndexed {num_indexed} chunks\033[0m")
+        except FileNotFoundError as e:
+            print(f"Error: {e}")
+            print("Create a 'docs' folder with .md files first.")
+            sys.exit(1)
 
-    # Always flush in short-lived scripts
-    get_client().flush()
+        # Step 2: Query the RAG pipeline
+        print_section("Querying RAG pipeline...")
+
+        query = "What is Llamaindex and how do I set up?"
+        print(f"\033[32mQuery:\033[0m {query}")
+
+        result = rag_pipeline(query)
+        respose_preview = result.split("\n")[0]  # Show only the first line for brevity
+        print(f"\n\033[33mRAG Response Preview:\033[0m\n{respose_preview}")
+        # print(f"\n\033[32mResponse:\033[0m\n{result}")
+
+        # Always flush in short-lived scripts
+        get_client().flush()

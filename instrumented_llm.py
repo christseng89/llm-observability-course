@@ -25,6 +25,7 @@ langfuse = Langfuse()
 
 PROJECT_NAME = "instrumented_llm"
 
+
 @dataclass
 class LLMResponse:
     """Structured response from LLM calls."""
@@ -61,7 +62,9 @@ def calculate_cost_details(
 
 def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     """Calculate cost based on token usage."""
-    return sum((calculate_cost_details(model, input_tokens, output_tokens) or {}).values())
+    return sum(
+        (calculate_cost_details(model, input_tokens, output_tokens) or {}).values()
+    )
 
 
 def build_response(
@@ -92,7 +95,7 @@ def print_response(label: str, response: LLMResponse) -> None:
     print(f"- Duration: {response.duration_ms:.0f}ms")
 
 
-@observe() # Span for the call to Claude
+@observe()  # Span for the call to Claude
 def instr_call_claude(
     prompt: str,
     model: str = "claude-haiku-5-5",
@@ -131,8 +134,12 @@ def instr_call_claude(
             block.text for block in response.content if block.type == "text"
         )
         result = build_response(
-            content, response.model,
-            input_tokens, output_tokens, start, cost_details,
+            content,
+            response.model,
+            input_tokens,
+            output_tokens,
+            start,
+            cost_details,
         )
 
         generation.update(
@@ -177,8 +184,12 @@ def instr_call_openai(
     output_tokens = response.usage.completion_tokens
     cost_details = calculate_cost_details(model, input_tokens, output_tokens)
     result = build_response(
-        response.choices[0].message.content, model,
-        input_tokens, output_tokens, start, cost_details,
+        response.choices[0].message.content,
+        model,
+        input_tokens,
+        output_tokens,
+        start,
+        cost_details,
     )
 
     # Update current span with model-specific info using v4 API
@@ -217,14 +228,13 @@ def instr_compare(prompt: str) -> dict:
 
 # Example usage
 if __name__ == "__main__":
-
     print_section("Langfuse Observability Example: Instrumented LLM Calls")
     with propagate_attributes(
         user_id="user_123",
         tags=["observability", "theory of relativity"],
         metadata={"project": PROJECT_NAME},
-    ):  
-        # # Simple call - creates a trace with one span  
+    ):
+        # # Simple call - creates a trace with one span
         # response = instr_call_claude("What is observability in 2 sentences?")
         # print_response("Claude", response)
 
@@ -233,7 +243,7 @@ if __name__ == "__main__":
 
         # print(f"Response: {response.content}")
         print(f"\033[32mQuery: {query}\033[0m")
-        
+
         print_response("OpenAI", response["openai"])
         print_response("Claude", response["claude"])
 

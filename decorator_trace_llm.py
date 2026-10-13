@@ -6,7 +6,9 @@ Nested function calls automatically create nested spans.
 """
 
 from langfuse import observe, Langfuse, propagate_attributes
-from langfuse.openai import OpenAI  # drop-in wrapper: auto-records model, usage and cost
+from langfuse.openai import (
+    OpenAI,
+)  # drop-in wrapper: auto-records model, usage and cost
 from dotenv import load_dotenv
 
 load_dotenv()

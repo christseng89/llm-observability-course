@@ -198,7 +198,7 @@ def simulate_semantic_cache():
 
         for i, question in enumerate(group["questions"]):
             total_queries += 1
-            print(f'\n🔍 Query {i+1}: "{question}"')
+            print(f'\n🔍 Query {i + 1}: "{question}"')
 
             # Check cache BEFORE calling - show what's happening
             cached_result = cache.get(question)
@@ -245,7 +245,7 @@ def simulate_semantic_cache():
     │  Total Queries:        {total_queries:3d}                                      │
     │  Cache Hits:           {cache_hits:3d}  ✅                                    │
     │  Cache Misses:         {cache_misses:3d}  ❌                                    │
-    │  Hit Rate:             {(cache_hits/total_queries*100) if total_queries > 0 else 0:5.1f}%                                   │
+    │  Hit Rate:             {(cache_hits / total_queries * 100) if total_queries > 0 else 0:5.1f}%                                   │
     │  API Calls Saved:      {api_calls_saved:3d}  💰                                    │
     └─────────────────────────────────────────────────────────────────┘
     """

@@ -95,7 +95,7 @@ class ModelRouter:
 # Integration with observability
 from langfuse import observe, Langfuse
 from anthropic import Anthropic
-from openai import OpenAI
+from langfuse.openai import OpenAI
 
 langfuse = Langfuse()
 router = ModelRouter()

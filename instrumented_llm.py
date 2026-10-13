@@ -7,12 +7,14 @@ Updated for Langfuse Python SDK v4 (Decorator-based API)
 """
 
 from anthropic import Anthropic
-from openai import OpenAI
-from langfuse import observe, Langfuse
+from langfuse.openai import OpenAI
+from langfuse import observe, Langfuse, propagate_attributes
 from dotenv import load_dotenv
 import time
-# from typing import Optional, Dict, Any
+from typing import Any
 from dataclasses import dataclass
+
+from common import print_section
 
 load_dotenv()
 
@@ -21,6 +23,7 @@ anthropic_client = Anthropic()
 openai_client = OpenAI()
 langfuse = Langfuse()
 
+PROJECT_NAME = "instrumented_llm"
 
 @dataclass
 class LLMResponse:
@@ -36,40 +39,69 @@ class LLMResponse:
 
 # Token pricing (per 1M tokens) - Update as needed
 PRICING = {
-    "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00},
-    "claude-3-5-haiku-20241022": {"input": 0.25, "output": 1.25},
+    "claude-sonnet-4-6": {"input": 3.00, "output": 15.00},
+    "claude-haiku-5-5": {"input": 0.25, "output": 1.25},
     "gpt-4o": {"input": 2.50, "output": 10.00},
     "gpt-4o-mini": {"input": 0.15, "output": 0.60},
 }
 
 
+def calculate_cost_details(
+    model: str, input_tokens: int, output_tokens: int
+) -> dict[str, float] | None:
+    """Return cost components, or None so Langfuse can infer unknown pricing."""
+    pricing = PRICING.get(model)
+    if pricing is None:
+        return None
+    return {
+        "input": input_tokens / 1_000_000 * pricing["input"],
+        "output": output_tokens / 1_000_000 * pricing["output"],
+    }
+
+
 def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     """Calculate cost based on token usage."""
-    pricing = PRICING.get(model, {"input": 0, "output": 0})
-    input_cost = (input_tokens / 1_000_000) * pricing["input"]
-    output_cost = (output_tokens / 1_000_000) * pricing["output"]
-    return input_cost + output_cost
+    return sum((calculate_cost_details(model, input_tokens, output_tokens) or {}).values())
 
 
-@observe()
-def call_claude(
-    prompt: str,
-    model: str = "claude-sonnet-4-20250514",
-    system: Optional[str] = None,
-    max_tokens: int = 1024,
-    metadata: Optional[Dict[str, Any]] = None,
+def build_response(
+    content: str,
+    model: str,
+    input_tokens: int,
+    output_tokens: int,
+    start: float,
+    cost_details: dict[str, float] | None,
 ) -> LLMResponse:
-    """
-    Call Claude with full observability.
+    """Normalize provider results and elapsed time."""
+    return LLMResponse(
+        content=content,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        model=model,
+        duration_ms=(time.perf_counter() - start) * 1000,
+        cost=sum((cost_details or {}).values()),
+    )
 
-    The @observe decorator automatically:
-    - Creates a span in the trace
-    - Captures timing
-    - Nests properly when called from other @observe functions
-    """
 
-    start = time.time()
+def print_response(label: str, response: LLMResponse) -> None:
+    """Print a response with a yellow heading and consistent usage details."""
+    print(f"\n\033[33m{label} Response:\033[0m \n{response.content}")
+    print(f"\n- Tokens: {response.input_tokens} in, {response.output_tokens} out")
+    print(f"- Model: {response.model}")
+    print(f"- Cost: ${response.cost:.6f}")
+    print(f"- Duration: {response.duration_ms:.0f}ms")
 
+
+@observe() # Span for the call to Claude
+def instr_call_claude(
+    prompt: str,
+    model: str = "claude-haiku-5-5",
+    system: str | None = None,
+    max_tokens: int = 1024,
+    metadata: dict[str, Any] | None = None,
+) -> LLMResponse:
+
+    start = time.perf_counter()
     messages = [{"role": "user", "content": prompt}]
 
     kwargs = {
@@ -77,50 +109,58 @@ def call_claude(
         "max_tokens": max_tokens,
         "messages": messages,
     }
+
     if system:
         kwargs["system"] = system
 
-    response = anthropic_client.messages.create(**kwargs)
-
-    duration_ms = (time.time() - start) * 1000
-    cost = calculate_cost(
-        model, response.usage.input_tokens, response.usage.output_tokens
-    )
-
-    # Update current span with model-specific info using v4 API
-    langfuse.update_current_span(
-        metadata={
-            **(metadata or {}),
-            "model": model,
-            "input_tokens": response.usage.input_tokens,
-            "output_tokens": response.usage.output_tokens,
-            "duration_ms": duration_ms,
-            "stop_reason": response.stop_reason,
-            "cost": cost,
-        },
-    )
-
-    return LLMResponse(
-        content=response.content[0].text,
-        input_tokens=response.usage.input_tokens,
-        output_tokens=response.usage.output_tokens,
+    # Generation span with model-specific metadata and cost details
+    with langfuse.start_as_current_observation(
+        as_type="generation",
+        name="Claude-generation",
         model=model,
-        duration_ms=duration_ms,
-        cost=cost,
-    )
+        input=messages,
+        model_parameters={"max_tokens": max_tokens, "system": system},
+        metadata=metadata,
+    ) as generation:
+        response = anthropic_client.messages.create(**kwargs)
+
+        input_tokens = response.usage.input_tokens
+        output_tokens = response.usage.output_tokens
+        cost_details = calculate_cost_details(model, input_tokens, output_tokens)
+        content = "".join(
+            block.text for block in response.content if block.type == "text"
+        )
+        result = build_response(
+            content, response.model,
+            input_tokens, output_tokens, start, cost_details,
+        )
+
+        generation.update(
+            model=response.model,
+            output=result.content,
+            usage_details={"input": input_tokens, "output": output_tokens},
+            cost_details=cost_details,
+            metadata={
+                **(metadata or {}),
+                "duration_ms": result.duration_ms,
+                "stop_reason": response.stop_reason,
+            },
+        )
+
+    return result
 
 
 @observe()
-def call_openai(
+def instr_call_openai(
     prompt: str,
     model: str = "gpt-4o-mini",
-    system: Optional[str] = None,
+    system: str | None = None,
     max_tokens: int = 1024,
-    metadata: Optional[Dict[str, Any]] = None,
+    metadata: dict[str, Any] | None = None,
 ) -> LLMResponse:
     """Call OpenAI with full observability."""
 
-    start = time.time()
+    start = time.perf_counter()
 
     messages = []
     if system:
@@ -133,11 +173,13 @@ def call_openai(
         messages=messages,
     )
 
-    duration_ms = (time.time() - start) * 1000
-
     input_tokens = response.usage.prompt_tokens
     output_tokens = response.usage.completion_tokens
-    cost = calculate_cost(model, input_tokens, output_tokens)
+    cost_details = calculate_cost_details(model, input_tokens, output_tokens)
+    result = build_response(
+        response.choices[0].message.content, model,
+        input_tokens, output_tokens, start, cost_details,
+    )
 
     # Update current span with model-specific info using v4 API
     langfuse.update_current_span(
@@ -146,29 +188,22 @@ def call_openai(
             "model": model,
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
-            "duration_ms": duration_ms,
-            "cost": cost,
+            "duration_ms": result.duration_ms,
+            "cost": result.cost,
         },
     )
 
-    return LLMResponse(
-        content=response.choices[0].message.content,
-        input_tokens=input_tokens,
-        output_tokens=output_tokens,
-        model=model,
-        duration_ms=duration_ms,
-        cost=cost,
-    )
+    return result
 
 
 @observe()
-def compare_models(prompt: str) -> dict:
+def instr_compare(prompt: str) -> dict:
     """
     Compare responses from Claude and OpenAI for the same prompt.
     Each call becomes a child span in the trace.
     """
-    claude_response = call_claude(prompt)
-    openai_response = call_openai(prompt)
+    claude_response = instr_call_claude(prompt)
+    openai_response = instr_call_openai(prompt)
 
     langfuse.update_current_span(
         metadata={"comparison": True},
@@ -182,18 +217,25 @@ def compare_models(prompt: str) -> dict:
 
 # Example usage
 if __name__ == "__main__":
-    # Simple call - creates a trace with one span
-    # response = call_claude("What is observability in 2 sentences?")
 
-    response = compare_models("Explain the theory of relativity in simple terms.")
+    print_section("Langfuse Observability Example: Instrumented LLM Calls")
+    with propagate_attributes(
+        user_id="user_123",
+        tags=["observability", "theory of relativity"],
+        metadata={"project": PROJECT_NAME},
+    ):  
+        # # Simple call - creates a trace with one span  
+        # response = instr_call_claude("What is observability in 2 sentences?")
+        # print_response("Claude", response)
 
-    # print(f"Response: {response.content}")
-    print(f"Response: {response}")
-    print(
-        f"Tokens: {response.claude.input_tokens} in, {response.claude.output_tokens} out"
-    )
-    print(f"Cost: ${response.claude.cost:.6f}")
-    print(f"Duration: {response.claude.duration_ms:.0f}ms")
+        query = "Explain the theory of relativity in simple terms in Chinese."
+        response = instr_compare(query)
 
-    # IMPORTANT: Always flush in short-lived scripts to ensure data is sent
-    langfuse.flush()
+        # print(f"Response: {response.content}")
+        print(f"\033[32mQuery: {query}\033[0m")
+        
+        print_response("OpenAI", response["openai"])
+        print_response("Claude", response["claude"])
+
+        # IMPORTANT: Always flush in short-lived scripts to ensure data is sent
+        langfuse.flush()

@@ -189,7 +189,11 @@ Prompt Optimization = Remove Unnecessary Tokens Without Sacrificing Quality.
 注意： 語意相似不代表答案一定相同。必須確認快取答案適用於目前的問題及業務情境。
 
 ```bash
+# Cache
 uv run semantic_cache.py 
 uv run semantic_cache.py # Twice
+
+# Routing
+uv run model_routing.py
 ```
 ---

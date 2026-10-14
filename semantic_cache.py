@@ -25,26 +25,52 @@ LangchainInstrumentor().instrument()
 PROJECT_NAME = "semantic_cache"
 MODEL = "claude-haiku-5-5"  # or "claude-sonnet-4-6" for more complex tasks
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"  # dim 384
-SIMILARITY_THRESHOLD = 0.92  # Lowered for better semantic matching
+
+# DEFAULT_SIMILARITY_THRESHOLD = 0.92 只是 SemanticCache 建構子的預設值，目前沒有被採用。
+DEFAULT_SIMILARITY_THRESHOLD = 0.92  # Higher for better semantic matching
+SIMILARITY_THRESHOLD = 0.85  # Lowered for better semantic matching
+TTL_HOURS = 24  # Cache expiration in hours
+
 # Initialize Anthropic client
 client = anthropic.Anthropic()
 
 
-@observe(name="anthropic_claude", as_type="generation")
 def semantic_cached_claude(query: str) -> anthropic.types.Message:
     """Call Claude API with the given query."""
-    return client.messages.create(
+    messages = [{"role": "user", "content": query}]
+
+    with langfuse.start_as_current_observation(
+        name="anthropic_claude",
+        as_type="generation",
         model=MODEL,
-        max_tokens=1024,
-        messages=[{"role": "user", "content": query}],
-    )
+        input=messages,
+        model_parameters={"max_tokens": 1024},
+    ) as generation:
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=1024,
+            messages=messages,
+        )
+        response_text = "".join(
+            block.text for block in response.content if block.type == "text"
+        )
+        generation.update(
+            model=response.model,
+            output=response_text,
+            usage_details={
+                "input": response.usage.input_tokens,
+                "output": response.usage.output_tokens,
+            },
+        )
+
+    return response
 
 
 class SemanticCache:
     def __init__(
         self,
-        similarity_threshold: float = SIMILARITY_THRESHOLD,
-        ttl_hours: int = 24,  # Cache expiration
+        similarity_threshold: float = DEFAULT_SIMILARITY_THRESHOLD,
+        ttl_hours: int = TTL_HOURS,  # Cache expiration
         persist_directory: str = "./chroma_cache_db",  # Persist for cross-run caching
     ):
         # Use PersistentClient for cache to survive across runs
@@ -118,7 +144,7 @@ class SemanticCache:
 
 # Langfuse Usage
 langfuse = get_client()
-cache = SemanticCache(similarity_threshold=0.85)  # Lowered for better semantic matching
+cache = SemanticCache(similarity_threshold=SIMILARITY_THRESHOLD)  # Lowered for better semantic matching
 
 
 @observe()
@@ -231,7 +257,7 @@ def semantic_cached_simulate():
             print(f"   └{'─' * 50}┘")
 
             # Show truncated response
-            display_response = result.split("\n")[0][:200] + ("..." if len(result) > 200 else "")
+            display_response = result.split("\n")[0] + ("..." if len(result) > 200 else "")
             print(f"   📝 Response: {display_response}")
 
     # Summary stats
@@ -258,6 +284,7 @@ def semantic_cached_simulate():
 
 if __name__ == "__main__":
     with propagate_attributes(
+        user_id="user_123",
         tags=["semantic-cache", "cost-optimization"],
         metadata={"project": PROJECT_NAME},
     ):

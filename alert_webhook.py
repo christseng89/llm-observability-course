@@ -3,13 +3,15 @@
 import requests
 from datetime import datetime
 
+from common import print_section
+
 # 🎯 STUDENT INSTRUCTIONS:
 # 1. Go to https://webhook.site
 # 2. Copy your unique URL
 # 3. Paste it below
 # 4. Run this script and watch the alert arrive!
 
-WEBHOOK_URL = "https://webhook.site/b7313890-14e1-4a1b-9b5d-16371f7328eb"
+WEBHOOK_URL = "https://webhook.site/fc29f0e8-e4cc-49bf-9bb7-6747bb31b1a5"
 
 
 def check_costs_and_alert():
@@ -30,7 +32,7 @@ def check_costs_and_alert():
     print(f"⚠️  Threshold: ${threshold:.2f}")
 
     if hourly_cost > threshold:
-        print(f"\n🚨 COST SPIKE DETECTED! Sending alert...\n")
+        print("\n🚨 COST SPIKE DETECTED! Sending alert...\n")
 
         response = requests.post(
             WEBHOOK_URL,
@@ -48,7 +50,7 @@ def check_costs_and_alert():
         )
 
         if response.status_code == 200:
-            print("✅ Alert sent! Check webhook.site to see it.")
+            print(f"✅ Alert sent! Check webhook.site to see it. {response}")
         else:
             print(f"❌ Failed: {response.status_code}")
     else:
@@ -56,4 +58,5 @@ def check_costs_and_alert():
 
 
 if __name__ == "__main__":
+    print_section("💸 Cost Monitoring & Alerting")
     check_costs_and_alert()

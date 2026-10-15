@@ -1,6 +1,5 @@
 """Tailwind-powered UI styling helpers for the Streamlit chatbot."""
 
-
 import html
 
 import streamlit as st

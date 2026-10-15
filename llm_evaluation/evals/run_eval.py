@@ -26,10 +26,9 @@ GOLDEN_DATASET_PATH = ROOT_DIR / "evals" / "data" / "golden_dataset.json"
 RESULTS_DIR = ROOT_DIR / "evals" / "results"
 
 RETRIEVAL_TOP_K = 4
-
 PASS_THRESHOLD = 0.8
-
 MIN_PASS_RATE = 0.8
+PROJECT_NAME = "llm-eval"
 
 client = get_client() 
 
@@ -145,12 +144,15 @@ def run() -> None:
     run_ingestion()
 
     cases = load_golden_dataset()
-
     session_id = f"eval-run-{datetime.now():%Y%m%d-%H%M%S}"
-
     results = []
 
-    with propagate_attributes(session_id=session_id, tags=["eval-run"]):
+    with propagate_attributes(
+        session_id=session_id, 
+        tags=["eval-run"], 
+        user_id="demo-user", 
+        metadata={"project": PROJECT_NAME},
+        ):        
         for case in cases:
             print(f"Running case: {case['id']}")
             result = score_case(case)

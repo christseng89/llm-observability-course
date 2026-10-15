@@ -15,6 +15,7 @@ from evals.metrics.safety_metrics import SafetyMetrics
 from src import config
 from src.tools import ALL_TOOLS
 
+PROJECT_NAME = "LangFuse RAG Chatbot Agent"
 
 SYSTEM_PROMPT = """You are a helpful assistant for a company's internal chatbot.
 You have access to tools:
@@ -49,17 +50,35 @@ def _score_online(trace_id: str, question: str, answer: str) -> None:
     toxicity_result = SafetyMetrics.toxicity_score(answer)
     bias_result = SafetyMetrics.bias_fairness_score(answer)
 
-    client.create_score(trace_id=trace_id, name="toxicity", value=toxicity_result.score, data_type="NUMERIC")
-    client.create_score(trace_id=trace_id, name="bias_fairness", value=bias_result.score, data_type="NUMERIC")
+    client.create_score(
+        trace_id=trace_id,
+        name="toxicity",
+        value=toxicity_result.score,
+        data_type="NUMERIC",
+    )
+    client.create_score(
+        trace_id=trace_id,
+        name="bias_fairness",
+        value=bias_result.score,
+        data_type="NUMERIC",
+    )
 
     try:
         relevancy_metric = EvalMetrics.answer_relevancy_metric()
         relevancy_metric.measure(LLMTestCase(input=question, actual_output=answer))
         client.create_score(
-            trace_id=trace_id, name="answer_relevancy", value=relevancy_metric.score, data_type="NUMERIC"
+            trace_id=trace_id,
+            name="answer_relevancy",
+            value=relevancy_metric.score,
+            data_type="NUMERIC",
         )
     except Exception as exc:
-        client.create_score(trace_id=trace_id, name="answer_relevancy_error", value=str(exc), data_type="TEXT")
+        client.create_score(
+            trace_id=trace_id,
+            name="answer_relevancy_error",
+            value=str(exc),
+            data_type="TEXT",
+        )
 
     client.flush()
 
@@ -80,33 +99,45 @@ def ask_with_tools(
     """
 
     agent = get_agent()
-
     messages = list(chat_history or [])
-
     messages.append({"role": "user", "content": question})
 
-    with propagate_attributes(session_id=session_id, tags=["chatbot"]):
+    with propagate_attributes(
+        session_id=session_id,
+        tags=["chatbot"],
+        user_id="demo-user",
+        metadata={"project": PROJECT_NAME},
+    ):
+        print(f"\033[92mQuestion: {question}\033[0m")
         with client.start_as_current_observation(
             name=f"question: {question}", as_type="span"
         ) as trace:
-            result = agent.invoke({"messages": messages}, config={"callbacks": [handler]})
+            result = agent.invoke(
+                {"messages": messages}, config={"callbacks": [handler]}
+            )
 
             answer = result["messages"][-1].content
 
             tool_names = [
-                message.name for message in result["messages"] if isinstance(message, ToolMessage)
+                message.name
+                for message in result["messages"]
+                if isinstance(message, ToolMessage)
             ]
 
             trace.update(input=question, output=answer)
             trace_id = client.get_current_trace_id()
 
     if online_eval:
-        threading.Thread(target=_score_online, args=(trace_id, question, answer), daemon=True).start()
+        threading.Thread(
+            target=_score_online, args=(trace_id, question, answer), daemon=True
+        ).start()
 
     return answer, tool_names
 
 
-def ask(question: str, chat_history: list[dict] | None = None, session_id: str | None = None) -> str:
+def ask(
+    question: str, chat_history: list[dict] | None = None, session_id: str | None = None
+) -> str:
 
     answer, _tool_names = ask_with_tools(question, chat_history, session_id=session_id)
     return answer

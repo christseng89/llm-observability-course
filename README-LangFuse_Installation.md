@@ -63,3 +63,24 @@ docker compose up -d
 ---
 
 > Install the Langfuse AI skill from github.com/langfuse/skills and use it to add tracing to this application with Langfuse following best practices.
+
+---
+
+## Test llm_langfuse
+
+```bash
+cd ..
+
+uv sync
+cd llm_evaluation
+
+# Evals
+uv run basic_evals.py
+
+# LangFuse
+uv run langfuse_practice.py
+
+# Application
+uv run app.py
+
+```

@@ -1,25 +1,25 @@
-# fixed size chunking 
+# fixed size chunking
 
-def fixed_size_chunk(text: str, chunk_size: int, chunk_overlap:int) -> list[str]:
 
-    text = text.strip() 
+def fixed_size_chunk(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
 
-    if not text: 
-        return [] 
+    text = text.strip()
 
-    step = chunk_size - chunk_overlap 
+    if not text:
+        return []
 
-    chunks = [] 
+    step = chunk_size - chunk_overlap
 
-    start = 0 
+    chunks = []
 
-    while start < len(text): 
+    start = 0
 
-        chunk = text[start: start + chunk_size].strip() 
+    while start < len(text):
+        chunk = text[start : start + chunk_size].strip()
 
         if chunk:
             chunks.append(chunk)
 
-        start += step 
+        start += step
 
-    return chunks         
+    return chunks

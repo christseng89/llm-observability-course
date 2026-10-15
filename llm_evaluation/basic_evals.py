@@ -1,11 +1,11 @@
-import os 
-from dotenv import load_dotenv 
+import os
+from dotenv import load_dotenv
 
-from deepeval import evaluate 
-from deepeval.test_case import LLMTestCase 
+from deepeval import evaluate
+from deepeval.test_case import LLMTestCase
 from openai import OpenAI
-from deepeval.metrics import AnswerRelevancyMetric 
-from deepeval.models import GPTModel 
+from deepeval.metrics import AnswerRelevancyMetric
+from deepeval.models import OpenAIModel
 
 
 load_dotenv()
@@ -17,19 +17,15 @@ JUDGE_MODEL = "gpt-4.1-mini"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+
 def chatbot(question: str) -> str:
 
-    response = client.responses.create(
-       model = CHATBOT_MODEL,
-       input = question
-
-    )
+    response = client.responses.create(model=CHATBOT_MODEL, input=question)
 
     return response.output_text
 
 
-
-def main(): 
+def main():
 
     question = "What is the capital of India?"
 
@@ -38,25 +34,12 @@ def main():
     print(f"Question: {question}")
     print(f"Answer: {answer}")
 
-    test_case = LLMTestCase(
-        input=question,
-        actual_output=answer
-    )
+    test_case = LLMTestCase(input=question, actual_output=answer)
 
-    judge_model = GPTModel(
-        model=JUDGE_MODEL,
-        api_key=OPENAI_API_KEY
-    )
-    metric = AnswerRelevancyMetric(
-        threshold=0.7,
-        model=judge_model
-    )
+    judge_model = OpenAIModel(model=JUDGE_MODEL, api_key=OPENAI_API_KEY)
+    metric = AnswerRelevancyMetric(threshold=0.7, model=judge_model)
 
-    evaluate(
-        test_cases=[test_case],
-        metrics=[metric]
-    )
-
+    evaluate(test_cases=[test_case], metrics=[metric])
 
 
 if __name__ == "__main__":

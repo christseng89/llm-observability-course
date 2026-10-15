@@ -1,10 +1,10 @@
-
-import chromadb 
+import chromadb
 from chromadb.utils import embedding_functions
 
 from functools import lru_cache
 
-from src import config 
+from src import config
+
 
 @lru_cache(maxsize=1)
 def get_collection():
@@ -20,4 +20,3 @@ def get_collection():
         name=config.CHROMA_COLLECTION_NAME,
         embedding_function=embedding_fn,
     )
-

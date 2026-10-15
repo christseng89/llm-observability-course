@@ -43,3 +43,23 @@ Understand how the application behaves in real usage.
 Build → Evaluate → Trace → Monitor → Improve
 
 ---
+# LangFuse Docker Compose Installation
+
+- <https://langfuse.com/self-hosting/deployment/docker-compose>
+
+```bash
+# Clone Langfuse Repository
+git clone https://github.com/langfuse/langfuse.git
+cd langfuse
+
+# Start the application
+docker compose up -d
+
+```
+## Browser
+
+<http://localhost:3000>
+
+---
+
+> Install the Langfuse AI skill from github.com/langfuse/skills and use it to add tracing to this application with Langfuse following best practices.

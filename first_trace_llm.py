@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
-from langfuse import Langfuse, observe, propagate_attributes
 from langfuse.openai import openai
+
+from langfuse import Langfuse, observe, propagate_attributes
 
 # @observe 创建父 span(trace 根节点),里面的 openai 调用自动成为子 generation
 load_dotenv()

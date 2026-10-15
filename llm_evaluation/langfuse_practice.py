@@ -1,16 +1,17 @@
-from datetime import datetime
 import re
+from datetime import datetime
+
 from dotenv import load_dotenv
 
 from common import print_section
 
 load_dotenv()
 
-from langfuse import get_client, propagate_attributes
 from langfuse.langchain import CallbackHandler
-
 from src.agents import get_agent
 from src.pipeline import run_ingestion
+
+from langfuse import get_client, propagate_attributes
 
 run_ingestion()
 
@@ -31,12 +32,12 @@ session_id = f"chatbot-demo-{datetime.now():%Y%m%d-%H%M%S}"
 # --------------- SESSION --------------
 
 with propagate_attributes(
-    session_id=session_id, 
-    tags=["rag-chatbot-demo"], 
-    user_id="demo-user", 
+    session_id=session_id,
+    tags=["rag-chatbot-demo"],
+    user_id="demo-user",
     metadata={"project": PROJECT_NAME},
-    ):
-    print_section ("Running questions through the agent")
+):
+    print_section("Running questions through the agent")
 
     for question in QUESTIONS:
         print(f"\033[92mQuestion: {question}\033[0m")

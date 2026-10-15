@@ -5,11 +5,12 @@ This approach uses decorators to automatically create traces and spans.
 Nested function calls automatically create nested spans.
 """
 
-from langfuse import observe, Langfuse, propagate_attributes
+from dotenv import load_dotenv
 from langfuse.openai import (
     OpenAI,
 )  # drop-in wrapper: auto-records model, usage and cost
-from dotenv import load_dotenv
+
+from langfuse import Langfuse, observe, propagate_attributes
 
 load_dotenv()
 client = OpenAI()

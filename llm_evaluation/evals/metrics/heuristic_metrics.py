@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Sequence
 
 
 @dataclass
@@ -41,7 +40,9 @@ class HeuristicMetrics:
         # Return the result as a MetricResult object.
         # input: score = 0.833
         # output: MetricResult(name="BLEU", score=0.833, note="Higher is better.")
-        return MetricResult(name="BLEU", score=round(score, 3), note="Higher is better.")
+        return MetricResult(
+            name="BLEU", score=round(score, 3), note="Higher is better."
+        )
 
     @staticmethod
     def rouge_score(candidate: str, reference: str) -> MetricResult:
@@ -65,7 +66,9 @@ class HeuristicMetrics:
         # Return the result as a MetricResult object.
         # input: score = 0.571
         # output: MetricResult(name="ROUGE", score=0.571, note="Higher is better.")
-        return MetricResult(name="ROUGE", score=round(score, 3), note="Higher is better.")
+        return MetricResult(
+            name="ROUGE", score=round(score, 3), note="Higher is better."
+        )
 
     @staticmethod
     def meteor_score(candidate: str, reference: str) -> MetricResult:
@@ -89,7 +92,9 @@ class HeuristicMetrics:
         # Return the result as a MetricResult object.
         # input: score = 0.571
         # output: MetricResult(name="METEOR", score=0.571, note="Higher is better.")
-        return MetricResult(name="METEOR", score=round(score, 3), note="Higher is better.")
+        return MetricResult(
+            name="METEOR", score=round(score, 3), note="Higher is better."
+        )
 
     @staticmethod
     def bertscore_score(candidate: str, reference: str) -> MetricResult:
@@ -113,7 +118,9 @@ class HeuristicMetrics:
         # Return the result as a MetricResult object.
         # input: score = 0.571
         # output: MetricResult(name="BERTScore", score=0.571, note="Higher is better.")
-        return MetricResult(name="BERTScore", score=round(score, 3), note="Higher is better.")
+        return MetricResult(
+            name="BERTScore", score=round(score, 3), note="Higher is better."
+        )
 
     @staticmethod
     def length_penalty(text: str, min_words: int = 20) -> MetricResult:
@@ -133,4 +140,6 @@ class HeuristicMetrics:
         # Return the result as a MetricResult object.
         # input: score = 0.0
         # output: MetricResult(name="Length Penalty", score=0.0, note="Higher is better.")
-        return MetricResult(name="Length Penalty", score=round(score, 3), note="Higher is better.")
+        return MetricResult(
+            name="Length Penalty", score=round(score, 3), note="Higher is better."
+        )

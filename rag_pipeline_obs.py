@@ -5,14 +5,12 @@ Required packages:
 """
 
 import sys
-
-from langfuse import observe, get_client, propagate_attributes
-from dotenv import load_dotenv
-from typing import Any
-import chromadb
-
-from anthropic import Anthropic
 from pathlib import Path
+from typing import Any
+
+import chromadb
+from anthropic import Anthropic
+from dotenv import load_dotenv
 
 # LangChain document format and text splitting
 from langchain_core.documents import Document
@@ -20,6 +18,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 
 from common import print_section
+from langfuse import get_client, observe, propagate_attributes
 
 load_dotenv()
 

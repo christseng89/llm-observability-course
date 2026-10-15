@@ -1,5 +1,7 @@
-from langfuse import observe, get_client  # , Langfuse
 from dotenv import load_dotenv
+
+from langfuse import get_client, observe  # , Langfuse
+
 # import os
 
 

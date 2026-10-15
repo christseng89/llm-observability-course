@@ -84,3 +84,10 @@ uv run langfuse_practice.py
 uv run app.py
 
 ```
+
+## Fix code format
+
+```bash
+uv run ruff check --select I --fix .
+uv run ruff format .
+```

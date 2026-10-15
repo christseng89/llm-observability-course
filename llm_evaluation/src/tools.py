@@ -1,10 +1,7 @@
 """Tools the agent can call."""
 
-
 from langchain_core.tools import tool
-
 from src.vectorstore import get_collection
-
 
 
 @tool
@@ -19,7 +16,6 @@ def search_knowledge_base(query: str, n_results: int = 4) -> str:
     if collection.count() == 0:
         return "The knowledge base is empty."
 
-
     results = collection.query(query_texts=[query], n_results=n_results)
 
     documents = results.get("documents", [[]])[0]
@@ -30,14 +26,12 @@ def search_knowledge_base(query: str, n_results: int = 4) -> str:
         return "No relevant information found in the knowledge base."
 
     formatted = []
-   
-    for text, meta in zip(documents, metadatas): 
+
+    for text, meta in zip(documents, metadatas):
         source = meta.get("source", "unknown") if meta else "unknown"
         formatted.append(f"[source: {source}]\n{text}")
-  
-  
-    return "\n\n---\n\n".join(formatted)
 
+    return "\n\n---\n\n".join(formatted)
 
 
 @tool
@@ -47,7 +41,6 @@ def get_weather(location: str) -> str:
     """
 
     return f"The weather in {location} is sunny with a high of 24°C (dummy data)."
-
 
 
 ALL_TOOLS = [search_knowledge_base, get_weather]

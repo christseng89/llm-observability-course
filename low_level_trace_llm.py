@@ -8,10 +8,12 @@ This approach gives you maximum control over everything:
 - Manual span/generation management
 """
 
-from langfuse import Langfuse, propagate_attributes
-from langfuse.openai import OpenAI
-from dotenv import load_dotenv
 import time
+
+from dotenv import load_dotenv
+from langfuse.openai import OpenAI
+
+from langfuse import Langfuse, propagate_attributes
 
 load_dotenv()
 client = OpenAI()

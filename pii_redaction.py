@@ -4,17 +4,18 @@ PII Redaction for Observability
 Required for GDPR, HIPAA, SOC2 compliance
 """
 
-import re
 import os
+import re
+
+import anthropic
 from dotenv import load_dotenv
 
-from langfuse import observe, get_client, propagate_attributes
-import anthropic
-
 from common import print_section
+from langfuse import get_client, observe, propagate_attributes
 
 load_dotenv()
 PROJECT_NAME = "PII Redaction for Observability"
+
 
 class PIIRedactor:
     """Redact PII before logging to observability platform."""

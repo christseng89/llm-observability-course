@@ -4,9 +4,10 @@ Token Cost Calculator for LLM Applications
 Demonstrates real-world cost estimation
 """
 
-import tiktoken
 from dataclasses import dataclass
 from typing import Dict
+
+import tiktoken
 
 from common import print_section
 

@@ -1,14 +1,14 @@
 from dotenv import load_dotenv
-from langfuse import observe, get_client, propagate_attributes
-
-from common import print_section
-
-# Initialize OpenTelemetry instrumentation for LangChain
-from opentelemetry.instrumentation.langchain import LangchainInstrumentor
 
 # use with any langchain component
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
+
+# Initialize OpenTelemetry instrumentation for LangChain
+from opentelemetry.instrumentation.langchain import LangchainInstrumentor
+
+from common import print_section
+from langfuse import get_client, observe, propagate_attributes
 
 load_dotenv()
 LangchainInstrumentor().instrument()

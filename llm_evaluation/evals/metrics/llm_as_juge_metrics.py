@@ -1,17 +1,16 @@
-
 from __future__ import annotations
 
 from typing import Any
-from deepeval.metrics import (
-        AnswerRelevancyMetric,
-        FaithfulnessMetric,
-        ContextualPrecisionMetric,
-        ContextualRecallMetric,
-        ContextualRelevancyMetric,
-        HallucinationMetric,
-        GEval,
-    )
 
+from deepeval.metrics import (
+    AnswerRelevancyMetric,
+    ContextualPrecisionMetric,
+    ContextualRecallMetric,
+    ContextualRelevancyMetric,
+    FaithfulnessMetric,
+    GEval,
+    HallucinationMetric,
+)
 from deepeval.test_case import SingleTurnParams
 
 

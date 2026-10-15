@@ -6,15 +6,16 @@ Use this as a starting point for your applications
 Updated for Langfuse Python SDK v4 (Decorator-based API)
 """
 
-from anthropic import Anthropic
-from langfuse.openai import OpenAI
-from langfuse import observe, Langfuse, propagate_attributes
-from dotenv import load_dotenv
 import time
-from typing import Any
 from dataclasses import dataclass
+from typing import Any
+
+from anthropic import Anthropic
+from dotenv import load_dotenv
+from langfuse.openai import OpenAI
 
 from common import print_section
+from langfuse import Langfuse, observe, propagate_attributes
 
 load_dotenv()
 

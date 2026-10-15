@@ -5,9 +5,10 @@ This approach uses context managers to explicitly define trace hierarchy.
 You have fine-grained control over spans and generations.
 """
 
-from langfuse import Langfuse, propagate_attributes
-from langfuse.openai import OpenAI
 from dotenv import load_dotenv
+from langfuse.openai import OpenAI
+
+from langfuse import Langfuse, propagate_attributes
 
 load_dotenv()
 client = OpenAI()

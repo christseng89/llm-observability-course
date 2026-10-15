@@ -1,11 +1,8 @@
 """Load raw text out of the files under datasets/ so they can be chunked."""
 
 import csv
-
 from dataclasses import dataclass
-
 from pathlib import Path
-
 
 from pypdf import PdfReader
 

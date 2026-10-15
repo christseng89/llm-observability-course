@@ -1,12 +1,11 @@
 import os
-from dotenv import load_dotenv
 
 from deepeval import evaluate
-from deepeval.test_case import LLMTestCase
-from openai import OpenAI
 from deepeval.metrics import AnswerRelevancyMetric
 from deepeval.models import OpenAIModel
-
+from deepeval.test_case import LLMTestCase
+from dotenv import load_dotenv
+from openai import OpenAI
 
 load_dotenv()
 

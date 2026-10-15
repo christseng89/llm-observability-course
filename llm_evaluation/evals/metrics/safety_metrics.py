@@ -59,4 +59,6 @@ class SafetyMetrics:
         # Return the result as a MetricResult object.
         # input: score = 0.0
         # output: MetricResult(name="Bias and Fairness", score=0.0, note="Higher is better.")
-        return MetricResult(name="Bias and Fairness", score=score, note="Higher is better.")
+        return MetricResult(
+            name="Bias and Fairness", score=score, note="Higher is better."
+        )

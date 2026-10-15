@@ -2,18 +2,14 @@
 
 import sys
 import uuid
-
 from pathlib import Path
 
-
 import streamlit as st
-
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.agents import ask_with_tools
 from src.design import PAGE_ICON, PAGE_TITLE, apply_design, render_bubble
-
 
 st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON, layout="centered")
 

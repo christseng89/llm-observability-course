@@ -4,20 +4,20 @@ Semantic Cache for LLM Responses
 Reduces costs by 30-50% for applications with repeated query patterns
 """
 
-import chromadb
-from sentence_transformers import SentenceTransformer
 import hashlib
 import json
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import anthropic
 
-from langfuse import observe, get_client, propagate_attributes
-from common import print_section, print_topic
+import anthropic
+import chromadb
+from dotenv import load_dotenv
 
 # Initialize OpenTelemetry instrumentation for LangChain
 from opentelemetry.instrumentation.langchain import LangchainInstrumentor
+from sentence_transformers import SentenceTransformer
 
+from common import print_section, print_topic
+from langfuse import get_client, observe, propagate_attributes
 
 load_dotenv()
 
@@ -81,7 +81,9 @@ class SemanticCache:
         self.encoder = SentenceTransformer(EMBEDDING_MODEL)
         self.threshold = similarity_threshold
         self.ttl = timedelta(hours=ttl_hours)
-        print(f"\033[92mSemantic Cache with Similarity={similarity_threshold}, Directory={persist_directory}\033[0m")
+        print(
+            f"\033[92mSemantic Cache with Similarity={similarity_threshold}, Directory={persist_directory}\033[0m"
+        )
 
     def _get_embedding(self, text: str) -> list:
         return self.encoder.encode(text).tolist()
@@ -144,7 +146,9 @@ class SemanticCache:
 
 # Langfuse Usage
 langfuse = get_client()
-cache = SemanticCache(similarity_threshold=SIMILARITY_THRESHOLD)  # Lowered for better semantic matching
+cache = SemanticCache(
+    similarity_threshold=SIMILARITY_THRESHOLD
+)  # Lowered for better semantic matching
 
 
 @observe()
@@ -187,7 +191,6 @@ def semantic_cached_simulate():
     SEMANTICALLY SIMILAR (meaning the same thing in different words).
     """
     print_section("🧠 SEMANTIC CACHE SIMULATION")
-    
 
     # Track stats
     total_queries = 0
@@ -243,13 +246,17 @@ def semantic_cached_simulate():
             if was_cached:
                 cache_hits += 1
                 api_calls_saved += 1
-                print("   │ \033[93m✅ CACHE HIT TRIGGERED!\033[0m                          │")
+                print(
+                    "   │ \033[93m✅ CACHE HIT TRIGGERED!\033[0m                          │"
+                )
                 print("   │ 💾 Retrieved from semantic cache                 │")
                 print("   │ 💰 API call SAVED! (Cost: $0.00)                 │")
             else:
                 cache_misses += 1
                 print(f"   ┌{'─' * 50}┐")
-                print("   │ \033[91m❌ CACHE MISS - No similar query found\033[0m           │")
+                print(
+                    "   │ \033[91m❌ CACHE MISS - No similar query found\033[0m           │"
+                )
                 print("   │ 🌐 Calling Claude API...                         │")
                 print("   │ 💸 API cost incurred                             │")
                 print("   │ 💾 Response cached for future similar queries    │")
@@ -257,7 +264,9 @@ def semantic_cached_simulate():
             print(f"   └{'─' * 50}┘")
 
             # Show truncated response
-            display_response = result.split("\n")[0] + ("..." if len(result) > 200 else "")
+            display_response = result.split("\n")[0] + (
+                "..." if len(result) > 200 else ""
+            )
             print(f"   📝 Response: {display_response}")
 
     # Summary stats

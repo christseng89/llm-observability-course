@@ -4,7 +4,6 @@ import html
 
 import streamlit as st
 
-
 PAGE_TITLE = "Knowledge Base Chatbot"
 PAGE_ICON = "💬"
 

@@ -1,8 +1,7 @@
-import chromadb
-from chromadb.utils import embedding_functions
-
 from functools import lru_cache
 
+import chromadb
+from chromadb.utils import embedding_functions
 from src import config
 
 

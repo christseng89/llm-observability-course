@@ -4,16 +4,16 @@ import threading
 from functools import lru_cache
 
 from deepeval.test_case import LLMTestCase
+from evals.metrics.llm_as_juge_metrics import EvalMetrics
+from evals.metrics.safety_metrics import SafetyMetrics
 from langchain.agents import create_agent
 from langchain_core.messages import ToolMessage
 from langchain_openai import ChatOpenAI
-from langfuse import get_client, propagate_attributes
 from langfuse.langchain import CallbackHandler
-
-from evals.metrics.llm_as_juge_metrics import EvalMetrics
-from evals.metrics.safety_metrics import SafetyMetrics
 from src import config
 from src.tools import ALL_TOOLS
+
+from langfuse import get_client, propagate_attributes
 
 PROJECT_NAME = "LangFuse RAG Chatbot Agent"
 

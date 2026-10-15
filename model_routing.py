@@ -4,14 +4,15 @@ Smart Model Router
 Automatically routes requests to the most cost-effective model
 """
 
-from enum import Enum
 import re
+from enum import Enum
+
+from anthropic import Anthropic
 from dotenv import load_dotenv
+from langfuse.openai import OpenAI
 
 # Integration with observability
-from langfuse import observe, get_client, propagate_attributes
-from anthropic import Anthropic
-from langfuse.openai import OpenAI
+from langfuse import get_client, observe, propagate_attributes
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ langfuse = get_client()
 # Initialize clients
 anthropic_client = Anthropic()
 openai_client = OpenAI()
+
 
 class TaskType(Enum):
     SIMPLE = "simple"  # Yes/no, classification
@@ -42,6 +44,7 @@ MODELS = {
 }
 
 PROJECT_NAME = "Smart Model Router"
+
 
 class ModelRouter:
     """Route requests to optimal models based on task analysis."""
@@ -113,11 +116,14 @@ class ModelRouter:
             return override_model
 
         task_type = self.routed_classify_task(prompt)
-        print(f"\033[38;5;130mRouting prompt to task type: {task_type.value}, model: {MODELS[task_type]}\033[0m")
+        print(
+            f"\033[38;5;130mRouting prompt to task type: {task_type.value}, model: {MODELS[task_type]}\033[0m"
+        )
         return MODELS[task_type]
 
 
 router = ModelRouter()
+
 
 def routed_call_claude(prompt: str, model: str):
     """Call Claude API."""
@@ -194,7 +200,6 @@ if __name__ == "__main__":
         tags=["model-routing", "cost-optimization"],
         metadata={"project": PROJECT_NAME},
     ):
-
         questions = [
             "Is 2 + 2 = 4? Yes or no",
             "Write a Python function to sort a list",

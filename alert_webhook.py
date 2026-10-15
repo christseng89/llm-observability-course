@@ -1,7 +1,8 @@
 # Example: Send alert when costs spike (using webhook.site for demo)
 
-import requests
 from datetime import datetime
+
+import requests
 
 from common import print_section
 

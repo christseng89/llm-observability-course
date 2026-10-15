@@ -83,6 +83,8 @@ uv run langfuse_practice.py
 # Application
 uv run app.py
 
+cd evals
+uv run run_eval.py
 ```
 
 ## Fix code format

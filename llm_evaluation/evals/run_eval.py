@@ -162,8 +162,8 @@ def run() -> None:
         user_id="demo-user",
         metadata={"project": PROJECT_NAME},
     ):
-        for case in cases:
-            print(f"Running case: {case['id']}")
+        for i, case in enumerate(cases):
+            print(f"\nRunning case: {case['id']} ( {i+1}/{len(cases)} )")
             result = score_case(case)
             results.append(result)
 
@@ -186,11 +186,28 @@ def run() -> None:
     with output_path.open("w", encoding="utf-8") as f:
         json.dump({"summary": summary, "cases": results}, f, indent=2)
 
-    print(f"\nSaved {len(results)} results to {output_path}")
+    average_scores = summary["average_scores"]
+    pass_rate = summary["pass_rate"]
+    pass_color = "\033[92m" if pass_rate >= MIN_PASS_RATE else "\033[91m"
+    reset = "\033[0m"
+
+    print("\033[93m\n╔══════════════════════════════════════════════════╗")
+    print("║              Evaluation Results Summary          ║")
+    print("╠══════════════════════════╤═══════════╤═══════════╣")
+    print("║ Metric                   │ Score     │ Percent   ║")
+    print("╠══════════════════════════╪═══════════╪═══════════╣")
+
+    for metric_name, score in average_scores.items():
+        label = metric_name.replace("_", " ").title()
+        print(f"║ {label:<24} │ {score:>7.3f}   │ {score:>7.1%}   ║")
+
+    print("╠══════════════════════════╪═══════════╪═══════════╣")
+    print(f"║ {'Pass Rate':<24} │ {pass_rate:>7.3f}   │ {pass_rate:>7.1%}   ║")
+    print("╚══════════════════════════╧═══════════╧═══════════╝\033[0m")
     print(
-        f"Pass rate: {summary['pass_rate']:.0%} ({summary['passed_cases']}/{summary['total_cases']})"
+        f"\n{pass_color}Status: {'PASSED' if pass_rate >= MIN_PASS_RATE else 'FAILED'}{reset}"
     )
-    print(f"Average scores: {summary['average_scores']}")
+    print(f"Saved {len(results)} results to {output_path}")
 
     client.flush()
 

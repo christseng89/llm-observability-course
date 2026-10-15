@@ -1,18 +1,18 @@
 {
   "summary": {
     "total_cases": 18,
-    "passed_cases": 13,
-    "pass_rate": 0.722,
+    "passed_cases": 11,
+    "pass_rate": 0.611,
     "average_scores": {
-      "keyword_coverage": 0.851,
+      "keyword_coverage": 0.853,
       "tool_call_accuracy": 0.944,
-      "rouge": 0.599,
+      "rouge": 0.639,
       "length_penalty": 0.556,
       "context_precision": 0.389,
       "context_recall": 0.944,
-      "toxicity": 1.0,
-      "correctness": 0.873,
-      "relevance": 0.905
+      "toxicity": 0.944,
+      "correctness": 0.827,
+      "relevance": 0.88
     }
   },
   "cases": [
@@ -21,7 +21,7 @@
       "category": "crm",
       "query": "which accounts are active in North America",
       "expected_answer": "HeathFirst, RetailMax, FinTrust, and TechNova are active accounts in North America.",
-      "actual_answer": "The active accounts in North America are:\n\n1. **HealthFirst**\n   - Industry: Healthcare\n\n2. **RetailMax**\n   - Industry: Retail\n\n3. **FinTrust**\n   - Industry: BFSI\n\n4. **TechNova**\n   - Industry: Technology",
+      "actual_answer": "The following accounts are currently active in North America:\n\n1. **HealthFirst**\n   - Industry: Healthcare\n   - Status: Active\n\n2. **RetailMax**\n   - Industry: Retail\n   - Status: Active\n\n3. **FinTrust**\n   - Industry: BFSI\n   - Status: Active\n\n4. **TechNova**\n   - Industry: Technology\n   - Status: Active\n\nIf you need more information about any of these accounts, just let me know!",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "crm_exports/accounts.csv",
@@ -32,13 +32,13 @@
       "scores": {
         "keyword_coverage": 0.8,
         "tool_call_accuracy": 0.0,
-        "rouge": 0.364,
+        "rouge": 0.455,
         "length_penalty": 1.0,
         "context_precision": 0.25,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.9029312230751356,
-        "relevance": 0.9268941421369996
+        "correctness": 0.9060086650174007,
+        "relevance": 0.890465053510089
       },
       "passed": false
     },
@@ -47,7 +47,7 @@
       "category": "crm",
       "query": "What was the status of the HealthFirst AWS Migration opportunity and what was its deal value?",
       "expected_answer": "The HealthFirst AWS Migration opportunity was lost in the Negotiation stage with a deal value of $500,000.",
-      "actual_answer": "The HealthFirst AWS Migration opportunity had a deal value of **$500,000**. The status of this opportunity is **Lost**, with the reason for loss being the shortage of AWS architects.",
+      "actual_answer": "The HealthFirst AWS Migration opportunity had a deal value of **$500,000**. However, its status was marked as **Lost**, and the reason for the loss was attributed to an **AWS Skill Shortage**. The opportunity was in the **Negotiation** stage and was created on **January 10, 2025**.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "proposal_documents/proposal_001.pdf",
@@ -56,24 +56,24 @@
         "proposal_documents/proposal_002.pdf"
       ],
       "scores": {
-        "keyword_coverage": 0.6,
+        "keyword_coverage": 0.8,
         "tool_call_accuracy": 1.0,
-        "rouge": 0.625,
+        "rouge": 0.75,
         "length_penalty": 1.0,
         "context_precision": 0.5,
         "context_recall": 1.0,
-        "toxicity": 1.0,
-        "correctness": 0.8904650535100892,
-        "relevance": 0.8731058578630005
+        "toxicity": 0.0,
+        "correctness": 0.7924141819978756,
+        "relevance": 0.9
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "snowflake_sales_rep",
       "category": "crm",
       "query": "Who is the sales rep for the Snowflake Platform opportunity?",
       "expected_answer": "The sales rep for the Snowflake Platform opportunity is Sarah Lee.",
-      "actual_answer": "The sales rep for the Snowflake Platform opportunity is identified by the sales_rep_id **SR002**.",
+      "actual_answer": "The sales rep for the Snowflake Platform opportunity is identified by the ID **SR002**.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "crm_exports/opportunities.csv",
@@ -89,8 +89,8 @@
         "context_precision": 1.0,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.006008665017400763,
-        "relevance": 0.20953494648991094
+        "correctness": 0.0,
+        "relevance": 0.29046505351008906
       },
       "passed": false
     },
@@ -99,7 +99,7 @@
       "category": "crm",
       "query": "Which opportunities were won?",
       "expected_answer": "The won opportunities were Azure Modernization, Snowflake Platform, Databricks Analytics, GraphRAG Platform, Factory AI Insights, and Retail Recommendation Engine.",
-      "actual_answer": "Here are the opportunities that were marked as won:\n\n1. **Opportunity ID:** OPP003\n   - **Account ID:** ACC004\n   - **Sales Rep ID:** SR001\n   - **Title:** Azure Modernization\n   - **Technology:** Azure\n   - **Service:** Cloud Migration\n   - **Deal Value:** $700,000\n   - **Created Date:** January 5, 2025\n   - **Close Date:** February 28, 2025\n\n2. **Opportunity ID:** OPP004\n   - **Account ID:** ACC005\n   - **Sales Rep ID:** SR002\n   - **Title:** Snowflake Platform\n   - **Technology:** Snowflake\n   - **Service:** Data Engineering\n   - **Deal Value:** $600,000\n   - **Created Date:** January 12, 2025\n   - **Close Date:** March 1, 2025\n\n3. **Opportunity ID:** OPP005\n   - **Account ID:** ACC003\n   - **Sales Rep ID:** SR004\n   - **Title:** Databricks Analytics\n   - **Technology:** Databricks\n   - **Service:** AI Analytics\n   - **Deal Value:** $400,000\n   - **Created Date:** February 10, 2025\n   - **Close Date:** March 25, 2025\n\n4. **Opportunity ID:** OPP007\n   - **Account ID:** ACC008\n   - **Sales Rep ID:** SR004\n   - **Title:** GraphRAG Platform\n   - **Technology:** Neo4j\n   - **Service:** AI Development\n   - **Deal Value:** $650,000\n   - **Created Date:** February 15, 2025\n   - **Close Date:** April 20, 2025\n\n5. **Opportunity ID:** OPP008\n   - **Account ID:** ACC007\n   - **Sales Rep ID:** SR002\n   - **Title:** Factory AI Insights\n   - **Technology:** Azure\n   - **Service:** AI Development\n   - **Deal Value:** $500,000\n   - **Created Date:** March 1, 2025\n   - **Close Date:** May 15, 2025\n\n6. **Opportunity ID:** OPP009\n   - **Account ID:** ACC006\n   - **Sales Rep ID:** SR003\n   - **Title:** Retail Recommendation Engine\n   - **Technology:** Databricks\n   - **Service:** AI Analytics\n   - **Deal Value:** $450,000\n   - **Created Date:** March 10, 2025\n   - **Close Date:** May 20, 2025\n\nIf you need further details on any specific opportunity, feel free to ask!",
+      "actual_answer": "Here are the opportunities that were won:\n\n1. **Azure Modernization**\n   - **Opportunity ID:** OPP003\n   - **Account ID:** ACC004\n   - **Sales Rep ID:** SR001\n   - **Technology:** Azure\n   - **Service:** Cloud Migration\n   - **Deal Value:** $700,000\n   - **Created Date:** January 5, 2025\n   - **Close Date:** February 28, 2025\n\n2. **Snowflake Platform**\n   - **Opportunity ID:** OPP004\n   - **Account ID:** ACC005\n   - **Sales Rep ID:** SR002\n   - **Technology:** Snowflake\n   - **Service:** Data Engineering\n   - **Deal Value:** $600,000\n   - **Created Date:** January 12, 2025\n   - **Close Date:** March 1, 2025\n\n3. **Databricks Analytics**\n   - **Opportunity ID:** OPP005\n   - **Account ID:** ACC003\n   - **Sales Rep ID:** SR004\n   - **Technology:** Databricks\n   - **Service:** AI Analytics\n   - **Deal Value:** $400,000\n   - **Created Date:** February 10, 2025\n   - **Close Date:** March 25, 2025\n\n4. **GraphRAG Platform**\n   - **Opportunity ID:** OPP007\n   - **Account ID:** ACC008\n   - **Sales Rep ID:** SR004\n   - **Technology:** Neo4j\n   - **Service:** AI Development\n   - **Deal Value:** $650,000\n   - **Created Date:** February 15, 2025\n   - **Close Date:** April 20, 2025\n\n5. **Factory AI Insights**\n   - **Opportunity ID:** OPP008\n   - **Account ID:** ACC007\n   - **Sales Rep ID:** SR002\n   - **Technology:** Azure\n   - **Service:** AI Development\n   - **Deal Value:** $500,000\n   - **Created Date:** March 1, 2025\n   - **Close Date:** May 15, 2025\n\n6. **Retail Recommendation Engine**\n   - **Opportunity ID:** OPP009\n   - **Account ID:** ACC006\n   - **Sales Rep ID:** SR003\n   - **Technology:** Databricks\n   - **Service:** AI Analytics\n   - **Deal Value:** $450,000\n   - **Created Date:** March 10, 2025\n   - **Close Date:** May 20, 2025\n\nThese opportunities have successfully closed with a \"Won\" status.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "crm_exports/opportunities.csv",
@@ -110,13 +110,13 @@
       "scores": {
         "keyword_coverage": 1.0,
         "tool_call_accuracy": 1.0,
-        "rouge": 0.611,
+        "rouge": 0.444,
         "length_penalty": 1.0,
         "context_precision": 0.75,
         "context_recall": 1.0,
         "toxicity": 1.0,
         "correctness": 1.0,
-        "relevance": 0.8679178699175394
+        "relevance": 1.0000000000000002
       },
       "passed": true
     },
@@ -125,7 +125,7 @@
       "category": "projects",
       "query": "Which projects are delayed and by how many days?",
       "expected_answer": "The delayed projects are GraphRAG Platform with a 35-day delay and Factory AI Insights with a 45-day delay.",
-      "actual_answer": "There are two projects that are currently delayed:\n\n1. **GraphRAG Platform** (Project ID: PRJ004) - Delayed by **35 days**.\n2. **Factory AI Insights** (Project ID: PRJ005) - Delayed by **45 days**. \n\nIf you need any additional information about these projects, feel free to ask!",
+      "actual_answer": "The following projects are currently delayed and their respective delays are as follows:\n\n1. **GraphRAG Platform**\n   - Delay: 35 days\n\n2. **Factory AI Insights**\n   - Delay: 45 days\n\nIf you need more information about these projects or their statuses, feel free to ask!",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "projects/projects.csv",
@@ -136,7 +136,7 @@
       "scores": {
         "keyword_coverage": 1.0,
         "tool_call_accuracy": 1.0,
-        "rouge": 0.25,
+        "rouge": 0.375,
         "length_penalty": 1.0,
         "context_precision": 0.5,
         "context_recall": 1.0,
@@ -151,7 +151,7 @@
       "category": "projects",
       "query": "Who is assigned to the GraphRAG Platform project?",
       "expected_answer": "Alex Martin is assigned to the GraphRAG Platform project.",
-      "actual_answer": "The **GraphRAG Platform** project is currently being worked on by **Alex Martin**, who has expertise in Neo4j engineering and is allocated 70% to this project. \n\nIf you need more information about the project or its status, feel free to ask!",
+      "actual_answer": "The GraphRAG Platform project is associated with the following sales representative: **SR002**. \n\nIf you need more information or specific details, feel free to ask!",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "proposal_documents/proposal_004.pdf",
@@ -160,24 +160,24 @@
         "projects/project_resources.csv"
       ],
       "scores": {
-        "keyword_coverage": 1.0,
+        "keyword_coverage": 0.5,
         "tool_call_accuracy": 1.0,
-        "rouge": 0.444,
+        "rouge": 0.556,
         "length_penalty": 1.0,
         "context_precision": 0.5,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.9622459331201855,
-        "relevance": 0.9029312230751355
+        "correctness": 0.0679178699175393,
+        "relevance": 0.1136177818869349
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "completed_projects_budget",
       "category": "projects",
       "query": "What is the total budget of the completed projects?",
       "expected_answer": "The total budget of the completed projects is $2,150,000.",
-      "actual_answer": "The total budget for the completed projects is calculated as follows:\n\n1. Azure Modernization: $700,000\n2. Snowflake Platform: $600,000\n3. Databricks Analytics: $400,000\n4. Retail Recommendation Engine: $450,000\n\nAdding these amounts together:\n\n- Total Budget = $700,000 + $600,000 + $400,000 + $450,000 = **$2,150,000** \n\nTherefore, the total budget of the completed projects is **$2,150,000**.",
+      "actual_answer": "The total budget of the completed projects is as follows:\n\n1. **Azure Modernization**: $700,000\n2. **Snowflake Platform**: $600,000\n3. **Databricks Analytics**: $400,000\n4. **Retail Recommendation Engine**: $450,000\n\nCalculating the total:\n\n- Total Budget = $700,000 + $600,000 + $400,000 + $450,000 = **$2,150,000**\n\nThus, the total budget of the completed projects is **$2,150,000**.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "projects/projects.csv",
@@ -203,7 +203,7 @@
       "category": "projects",
       "query": "What technology was used in the project for ACC004?",
       "expected_answer": "The project for ACC004 uses Azure technology.",
-      "actual_answer": "The technology used in the project for account ACC004 (Azure Modernization) is Azure. The project has been completed with a budget of $700,000 and an actual cost of $650,000, without any delay.",
+      "actual_answer": "The project for account ACC004 is \"Azure Modernization,\" and the technology used in this project is Azure.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "projects/projects.csv",
@@ -215,14 +215,14 @@
         "keyword_coverage": 1.0,
         "tool_call_accuracy": 1.0,
         "rouge": 0.571,
-        "length_penalty": 1.0,
+        "length_penalty": 0.0,
         "context_precision": 0.5,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.7927814866749472,
-        "relevance": 0.85
+        "correctness": 1.0,
+        "relevance": 0.9952574126822433
       },
-      "passed": false
+      "passed": true
     },
     {
       "id": "q2_healthcare_revenue",
@@ -255,7 +255,7 @@
       "category": "revenue",
       "query": "Which industry had the highest revenue in 2025-Q1?",
       "expected_answer": "Healthcare had the highest revenue in 2025-Q1 at $1,800,000.",
-      "actual_answer": "In Q1 of 2025, the industry with the highest revenue was **Healthcare**, generating a revenue of **$1,800,000**.",
+      "actual_answer": "In the first quarter of 2025 (2025-Q1), the industry with the highest revenue was **Healthcare**, generating a total of **$1,800,000**.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "revenue/revenue.csv",
@@ -264,10 +264,10 @@
         "crm_exports/opportunities.csv"
       ],
       "scores": {
-        "keyword_coverage": 0.3333333333333333,
+        "keyword_coverage": 0.6666666666666666,
         "tool_call_accuracy": 1.0,
         "rouge": 0.444,
-        "length_penalty": 0.0,
+        "length_penalty": 1.0,
         "context_precision": 0.25,
         "context_recall": 1.0,
         "toxicity": 1.0,
@@ -281,7 +281,7 @@
       "category": "projects",
       "query": "Which projects had actual costs above budget?",
       "expected_answer": "GraphRAG Platform and Factory AI Insights had actual costs above budget.",
-      "actual_answer": "The following projects had actual costs that exceeded their budgets:\n\n1. **GraphRAG Platform**\n   - **Project ID:** PRJ004\n   - **Account ID:** ACC008\n   - **Budget:** $650,000\n   - **Actual Cost:** $720,000\n   - **Status:** Delayed\n   - **Delay Days:** 35\n\n2. **Factory AI Insights**\n   - **Project ID:** PRJ005\n   - **Account ID:** ACC007\n   - **Budget:** $500,000\n   - **Actual Cost:** $620,000\n   - **Status:** Delayed\n   - **Delay Days:** 45\n\nThese projects went over budget during their execution.",
+      "actual_answer": "The following projects had actual costs that exceeded their budget:\n\n1. **GraphRAG Platform**\n   - **Project ID:** PRJ004\n   - **Budget:** $650,000\n   - **Actual Cost:** $720,000\n   - **Status:** Delayed\n   - **Delay Days:** 35\n\n2. **Factory AI Insights**\n   - **Project ID:** PRJ005\n   - **Budget:** $500,000\n   - **Actual Cost:** $620,000\n   - **Status:** Delayed\n   - **Delay Days:** 45\n\nThese projects went over their allocated budgets.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "projects/projects.csv",
@@ -298,7 +298,7 @@
         "context_recall": 1.0,
         "toxicity": 1.0,
         "correctness": 1.0,
-        "relevance": 0.9222700138825308
+        "relevance": 0.977729986117469
       },
       "passed": true
     },
@@ -307,7 +307,7 @@
       "category": "crm",
       "query": "Which sales rep covers Europe?",
       "expected_answer": "Sarah Lee covers Europe.",
-      "actual_answer": "The sales representative who covers Europe is **Sarah Lee**.",
+      "actual_answer": "The sales rep that covers Europe is Sarah Lee.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "crm_exports/sales_reps.csv",
@@ -318,7 +318,7 @@
       "scores": {
         "keyword_coverage": 1.0,
         "tool_call_accuracy": 1.0,
-        "rouge": 0.25,
+        "rouge": 0.5,
         "length_penalty": 0.0,
         "context_precision": 0.25,
         "context_recall": 1.0,
@@ -333,7 +333,7 @@
       "category": "proposals",
       "query": "What is the proposal value for HealthFirst?",
       "expected_answer": "The HealthFirst proposal value is $500,000.",
-      "actual_answer": "The proposal value for HealthFirst is $500,000 for the AWS Cloud Migration service.",
+      "actual_answer": "The proposal value for HealthFirst is $500,000. This proposal is for an AWS Cloud Migration service.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "proposal_documents/proposal_001.pdf",
@@ -344,13 +344,13 @@
       "scores": {
         "keyword_coverage": 1.0,
         "tool_call_accuracy": 1.0,
-        "rouge": 0.833,
+        "rouge": 1.0,
         "length_penalty": 0.0,
         "context_precision": 0.25,
         "context_recall": 1.0,
         "toxicity": 1.0,
         "correctness": 0.7880797077977882,
-        "relevance": 0.9679178699175394
+        "relevance": 0.9
       },
       "passed": false
     },
@@ -385,7 +385,7 @@
       "category": "proposals",
       "query": "Was the FinTrust proposal won or lost?",
       "expected_answer": "The FinTrust proposal was won.",
-      "actual_answer": "The FinTrust proposal was won, with a total value of $700,000 for Azure Modernization services.",
+      "actual_answer": "The FinTrust proposal was won, with a value of $700,000 for Azure Modernization services.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "proposal_documents/proposal_003.pdf",
@@ -401,7 +401,7 @@
         "context_precision": 0.25,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.8977022630089972,
+        "correctness": 0.8747824958181549,
         "relevance": 1.0
       },
       "passed": true
@@ -411,7 +411,7 @@
       "category": "proposals",
       "query": "What technologies are mentioned in the TechNova proposal?",
       "expected_answer": "The TechNova proposal mentions Neo4j, LangGraph, and OpenAI.",
-      "actual_answer": "The TechNova proposal mentions the following technologies:\n\n1. **Neo4j**\n2. **LangGraph**\n3. **OpenAI**\n\nThe proposal is centered around the **GraphRAG Platform** with a deal value of **$650,000**.",
+      "actual_answer": "The TechNova proposal mentions the following technologies:\n\n1. **Neo4j**\n2. **LangGraph**\n3. **OpenAI**\n\nThe total value of the proposal is $650,000.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "proposal_documents/proposal_004.pdf",
@@ -427,17 +427,17 @@
         "context_precision": 0.25,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.8985638164797587,
-        "relevance": 0.9880797077977883
+        "correctness": 0.7939913349825993,
+        "relevance": 0.8731058578630005
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "autoworks_proposal_service",
       "category": "proposals",
       "query": "What service does the AutoWorks proposal describe?",
       "expected_answer": "The AutoWorks proposal describes Factory AI Insights.",
-      "actual_answer": "The AutoWorks proposal describes a service called **Factory AI Insights**. The technology used for this service includes **Azure** and **Databricks**, and it has a deal value of **$500,000**.",
+      "actual_answer": "The AutoWorks proposal describes the service \"Factory AI Insights.\" This service utilizes technologies such as Azure and Databricks, and the proposal has a deal value of $500,000.",
       "actual_tool": "search_knowledge_base",
       "retrieved_sources": [
         "proposal_documents/proposal_005.pdf",
@@ -453,8 +453,8 @@
         "context_precision": 0.25,
         "context_recall": 1.0,
         "toxicity": 1.0,
-        "correctness": 0.5888934016759134,
-        "relevance": 0.7817574476193644
+        "correctness": 0.7181389504712021,
+        "relevance": 0.890465053510089
       },
       "passed": false
     },
@@ -479,7 +479,7 @@
         "context_precision": 0.0,
         "context_recall": 0.0,
         "toxicity": 1.0,
-        "correctness": 0.9880797077977885,
+        "correctness": 0.9377540668798148,
         "relevance": 1.0
       },
       "passed": true

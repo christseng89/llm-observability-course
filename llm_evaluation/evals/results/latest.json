@@ -1,0 +1,488 @@
+{
+  "summary": {
+    "total_cases": 18,
+    "passed_cases": 16,
+    "pass_rate": 0.889,
+    "average_scores": {
+      "keyword_coverage": 0.759,
+      "tool_call_accuracy": 0.944,
+      "rouge": 0.482,
+      "length_penalty": 0.333,
+      "context_precision": 0.389,
+      "context_recall": 0.944,
+      "toxicity": 1.0,
+      "correctness": 0.963,
+      "relevance": 0.974
+    }
+  },
+  "cases": [
+    {
+      "id": "accounts_north_america",
+      "category": "crm",
+      "query": "which accounts are active in North America",
+      "expected_answer": "HeathFirst, RetailMax, FinTrust, and TechNova are active accounts in North America.",
+      "actual_answer": "Per the CRM accounts export, the active accounts in North America are:\n- HealthFirst (ACC001) \u2013 Healthcare\n- RetailMax (ACC003) \u2013 Retail\n- FinTrust (ACC004) \u2013 BFSI\n- TechNova (ACC008) \u2013 Technology\n\nLet me know if you want contacts or recent opportunities for any of these.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "crm_exports/accounts.csv",
+        "crm_exports/sales_reps.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 0.8,
+        "tool_call_accuracy": 0.0,
+        "rouge": 0.455,
+        "length_penalty": 1.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 0.8962673112655871,
+        "relevance": 0.9851952801968311
+      },
+      "passed": false
+    },
+    {
+      "id": "healthfirst_opportunity_status",
+      "category": "crm",
+      "query": "What was the status of the HealthFirst AWS Migration opportunity and what was its deal value?",
+      "expected_answer": "The HealthFirst AWS Migration opportunity was lost in the Negotiation stage with a deal value of $500,000.",
+      "actual_answer": "Status: Lost\nDeal value: $500,000\n\nSource: CRM (OPP001) and proposal_documents/proposal_001.pdf.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_001.pdf",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv",
+        "proposal_documents/proposal_002.pdf"
+      ],
+      "scores": {
+        "keyword_coverage": 0.2,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.125,
+        "length_penalty": 0.0,
+        "context_precision": 0.5,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 0.8119202922022118,
+        "relevance": 0.8148047198031689
+      },
+      "passed": true
+    },
+    {
+      "id": "snowflake_sales_rep",
+      "category": "crm",
+      "query": "Who is the sales rep for the Snowflake Platform opportunity?",
+      "expected_answer": "The sales rep for the Snowflake Platform opportunity is Sarah Lee.",
+      "actual_answer": "Sarah Lee (sales_rep_id SR002).",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/sales_reps.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 0.5,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.1,
+        "length_penalty": 0.0,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "won_opportunities",
+      "category": "crm",
+      "query": "Which opportunities were won?",
+      "expected_answer": "The won opportunities were Azure Modernization, Snowflake Platform, Databricks Analytics, GraphRAG Platform, Factory AI Insights, and Retail Recommendation Engine.",
+      "actual_answer": "According to the CRM exports, the following opportunities have status \u201cWon\u201d:\n\n- OPP003 \u2014 Azure Modernization (Account: FinTrust/ACC004) \u2014 Technology: Azure \u2014 Service: Cloud Migration \u2014 Deal value: 700,000 \u2014 Close date: 2025-02-28\n- OPP004 \u2014 Snowflake Platform (Account: GlobalBank/ACC005) \u2014 Technology: Snowflake \u2014 Service: Data Engineering \u2014 Deal value: 600,000 \u2014 Close date: 2025-03-01\n- OPP005 \u2014 Databricks Analytics (Account: RetailMax/ACC003) \u2014 Technology: Databricks \u2014 Service: AI Analytics \u2014 Deal value: 400,000 \u2014 Close date: 2025-03-25\n- OPP007 \u2014 GraphRAG Platform (Account: TechNova/ACC008) \u2014 Technology: Neo4j \u2014 Service: AI Development \u2014 Deal value: 650,000 \u2014 Close date: 2025-04-20\n- OPP008 \u2014 Factory AI Insights (Account: AutoWorks/ACC007) \u2014 Technology: Azure \u2014 Service: AI Development \u2014 Deal value: 500,000 \u2014 Close date: 2025-05-15\n- OPP009 \u2014 Retail Recommendation Engine (Account: ShopEase/ACC006) \u2014 Technology: Databricks \u2014 Service: AI Analytics \u2014 Deal value: 450,000 \u2014 Close date: 2025-05-20\n\nTotal won value: 3,300,000.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv",
+        "proposal_documents/proposal_003.pdf"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.611,
+        "length_penalty": 1.0,
+        "context_precision": 0.75,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 0.9970687769248643
+      },
+      "passed": true
+    },
+    {
+      "id": "delayed_projects",
+      "category": "projects",
+      "query": "Which projects are delayed and by how many days?",
+      "expected_answer": "The delayed projects are GraphRAG Platform with a 35-day delay and Factory AI Insights with a 45-day delay.",
+      "actual_answer": "According to the projects data (projects/projects.csv), the delayed projects are:\n- GraphRAG Platform \u2014 35 days delayed\n- Factory AI Insights \u2014 45 days delayed",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "projects/projects.csv",
+        "projects/projects.csv",
+        "proposal_documents/proposal_002.pdf",
+        "projects/project_resources.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.5,
+        "length_penalty": 1.0,
+        "context_precision": 0.5,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "graphrag_project_owner",
+      "category": "projects",
+      "query": "Who is assigned to the GraphRAG Platform project?",
+      "expected_answer": "Alex Martin is assigned to the GraphRAG Platform project.",
+      "actual_answer": "Alex Martin is assigned to the GraphRAG Platform project (PRJ004), as a Neo4j Engineering resource at 70% allocation. This comes from projects/project_resources.csv in the knowledge base.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_004.pdf",
+        "crm_exports/opportunities.csv",
+        "projects/projects.csv",
+        "projects/project_resources.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.889,
+        "length_penalty": 1.0,
+        "context_precision": 0.5,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 0.7953350321789575,
+        "relevance": 1.0
+      },
+      "passed": false
+    },
+    {
+      "id": "completed_projects_budget",
+      "category": "projects",
+      "query": "What is the total budget of the completed projects?",
+      "expected_answer": "The total budget of the completed projects is $2,150,000.",
+      "actual_answer": "$2,150,000\n\nBased on projects/projects.csv, the completed projects (PRJ001, PRJ002, PRJ003, PRJ006) have budgets of 700,000, 600,000, 400,000, and 450,000 respectively, totaling $2,150,000.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "projects/projects.csv",
+        "projects/projects.csv",
+        "projects/project_resources.csv",
+        "revenue/revenue.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.625,
+        "length_penalty": 1.0,
+        "context_precision": 0.5,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "acc004_project_technology",
+      "category": "projects",
+      "query": "What technology was used in the project for ACC004?",
+      "expected_answer": "The project for ACC004 uses Azure technology.",
+      "actual_answer": "According to the projects database, the ACC004 project (PRJ001 \u2013 Azure Modernization) used Azure.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "projects/projects.csv",
+        "projects/projects.csv",
+        "proposal_documents/proposal_005.pdf",
+        "proposal_documents/proposal_003.pdf"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.571,
+        "length_penalty": 0.0,
+        "context_precision": 0.5,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0000000000000002,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "q2_healthcare_revenue",
+      "category": "revenue",
+      "query": "How much revenue did Healthcare generate in 2025-Q2?",
+      "expected_answer": "Healthcare generated $900,000 in revenue in 2025-Q2.",
+      "actual_answer": "Healthcare generated $900,000 in revenue in 2025-Q2. Source: revenue/revenue.csv.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "revenue/revenue.csv",
+        "crm_exports/accounts.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 0.6666666666666666,
+        "tool_call_accuracy": 1.0,
+        "rouge": 1.0,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 0.9119202922022117
+      },
+      "passed": true
+    },
+    {
+      "id": "highest_q1_revenue",
+      "category": "revenue",
+      "query": "Which industry had the highest revenue in 2025-Q1?",
+      "expected_answer": "Healthcare had the highest revenue in 2025-Q1 at $1,800,000.",
+      "actual_answer": "Healthcare, with 1,800,000 in revenue for 2025-Q1 (source: revenue/revenue.csv).",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "revenue/revenue.csv",
+        "crm_exports/accounts.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 0.6666666666666666,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.333,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 0.9999999999999998,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "projects_over_budget",
+      "category": "projects",
+      "query": "Which projects had actual costs above budget?",
+      "expected_answer": "GraphRAG Platform and Factory AI Insights had actual costs above budget.",
+      "actual_answer": "Based on the projects data (projects/projects.csv), the following projects had actual costs above budget:\n- PRJ004 \u2014 GraphRAG Platform: budget $650,000; actual $720,000 (over by $70,000)\n- PRJ005 \u2014 Factory AI Insights: budget $500,000; actual $620,000 (over by $120,000)",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "projects/projects.csv",
+        "projects/projects.csv",
+        "projects/project_resources.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.636,
+        "length_penalty": 1.0,
+        "context_precision": 0.5,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 0.9999999999999998
+      },
+      "passed": true
+    },
+    {
+      "id": "europe_sales_rep",
+      "category": "crm",
+      "query": "Which sales rep covers Europe?",
+      "expected_answer": "Sarah Lee covers Europe.",
+      "actual_answer": "Sarah Lee covers Europe (per CRM sales reps data).",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "crm_exports/sales_reps.csv",
+        "crm_exports/accounts.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.75,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 0.9952574126822432,
+        "relevance": 0.9939913349825993
+      },
+      "passed": true
+    },
+    {
+      "id": "healthfirst_proposal_value",
+      "category": "proposals",
+      "query": "What is the proposal value for HealthFirst?",
+      "expected_answer": "The HealthFirst proposal value is $500,000.",
+      "actual_answer": "$500,000 (per proposal_documents\\proposal_001.pdf)",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_001.pdf",
+        "proposal_documents/proposal_002.pdf",
+        "revenue/revenue.csv",
+        "proposal_documents/proposal_003.pdf"
+      ],
+      "scores": {
+        "keyword_coverage": 0.3333333333333333,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.0,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "medcore_proposal_risk",
+      "category": "proposals",
+      "query": "What is the main risk mentioned in the MedCore proposal?",
+      "expected_answer": "The MedCore proposal mentions that proposal review was delayed by 3 weeks.",
+      "actual_answer": "According to proposal_documents/proposal_002.pdf, the main risk is a 3-week delay in the proposal review.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_002.pdf",
+        "proposal_documents/proposal_001.pdf",
+        "crm_exports/accounts.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 0.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.182,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 0.9377540668798146,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "fintrust_proposal_status",
+      "category": "proposals",
+      "query": "Was the FinTrust proposal won or lost?",
+      "expected_answer": "The FinTrust proposal was won.",
+      "actual_answer": "Won. Source: proposal_documents/proposal_003.pdf (Client: FinTrust, Status: Won).",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_003.pdf",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.2,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "technova_proposal_technologies",
+      "category": "proposals",
+      "query": "What technologies are mentioned in the TechNova proposal?",
+      "expected_answer": "The TechNova proposal mentions Neo4j, LangGraph, and OpenAI.",
+      "actual_answer": "Neo4j, LangGraph, and OpenAI. \n(Source: proposal_documents/proposal_004.pdf for TechNova)",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_004.pdf",
+        "projects/projects.csv",
+        "crm_exports/opportunities.csv",
+        "proposal_documents/proposal_003.pdf"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.5,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 0.9
+      },
+      "passed": true
+    },
+    {
+      "id": "autoworks_proposal_service",
+      "category": "proposals",
+      "query": "What service does the AutoWorks proposal describe?",
+      "expected_answer": "The AutoWorks proposal describes Factory AI Insights.",
+      "actual_answer": "Factory AI Insights.",
+      "actual_tool": "search_knowledge_base",
+      "retrieved_sources": [
+        "proposal_documents/proposal_005.pdf",
+        "proposal_documents/proposal_003.pdf",
+        "proposal_documents/proposal_002.pdf",
+        "crm_exports/opportunities.csv"
+      ],
+      "scores": {
+        "keyword_coverage": 0.5,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.429,
+        "length_penalty": 0.0,
+        "context_precision": 0.25,
+        "context_recall": 1.0,
+        "toxicity": 1.0,
+        "correctness": 1.0,
+        "relevance": 1.0
+      },
+      "passed": true
+    },
+    {
+      "id": "london_weather",
+      "category": "weather",
+      "query": "What is the weather like in London right now?",
+      "expected_answer": "The weather in London is sunny with a high of 24\u00b0C (dummy data).",
+      "actual_answer": "The weather in London is sunny with a high of 24\u00b0C.",
+      "actual_tool": "get_weather",
+      "retrieved_sources": [
+        "crm_exports/opportunities.csv",
+        "crm_exports/opportunities.csv",
+        "projects/projects.csv",
+        "proposal_documents/proposal_002.pdf"
+      ],
+      "scores": {
+        "keyword_coverage": 1.0,
+        "tool_call_accuracy": 1.0,
+        "rouge": 0.769,
+        "length_penalty": 0.0,
+        "context_precision": 0.0,
+        "context_recall": 0.0,
+        "toxicity": 1.0,
+        "correctness": 0.9017986209962089,
+        "relevance": 0.9222700138825308
+      },
+      "passed": true
+    }
+  ]
+}

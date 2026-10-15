@@ -20,3 +20,5 @@ lib64/
 chroma_db/
 chroma_cache_db/
 .venv/
+
+course_slides.pdf

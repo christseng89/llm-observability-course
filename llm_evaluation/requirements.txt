@@ -1,0 +1,12 @@
+langchain
+langchain-openai
+langgraph
+openai
+chromadb
+python-dotenv
+streamlit
+pypdf
+deepeval
+# ** change for langfuse **
+langfuse==4.14.2
+requests

@@ -1,0 +1,31 @@
+name: CI
+
+# Runs on every code change: any push to any branch, and any pull request.
+"on":
+  push:
+  pull_request:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run evaluation metrics
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # No LangFuse project is configured in CI, so tracing is disabled
+          # and the client no-ops instead of erroring. The eval metrics and
+          # pass/fail gate below run fully either way.
+          LANGFUSE_TRACING_ENABLED: "false"
+        run: python evals/run_eval.py

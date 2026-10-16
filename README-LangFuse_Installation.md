@@ -93,3 +93,8 @@ uv run run_eval.py
 uv run ruff check --select I --fix .
 uv run ruff format .
 ```
+
+```bash
+cd llm_evaluation/src
+uv run streamlit run app.py
+```

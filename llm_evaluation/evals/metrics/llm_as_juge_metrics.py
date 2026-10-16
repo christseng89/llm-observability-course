@@ -374,7 +374,9 @@ class EvalMetrics:
         # Create an answer-relevancy metric.
         # input: (no arguments; this method takes none)
         # output: a default-configured AnswerRelevancyMetric instance
-        return AnswerRelevancyMetric()
+        # Run synchronously because this metric is evaluated from the
+        # background scoring thread in the Streamlit app.
+        return AnswerRelevancyMetric(async_mode=False)
 
     @staticmethod
     def contextual_precision_metric() -> Any:

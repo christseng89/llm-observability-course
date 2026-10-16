@@ -1,5 +1,6 @@
 """Agentic workflow: an LLM agent that can call tools based on the user's question."""
 
+import logging
 import threading
 from functools import lru_cache
 
@@ -31,6 +32,7 @@ not find relevant information.
 
 client = get_client()
 handler = CallbackHandler()
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
@@ -40,8 +42,12 @@ def get_agent():
 
     return create_agent(model, tools=ALL_TOOLS, system_prompt=SYSTEM_PROMPT)
 
-
-def _score_online(trace_id: str, question: str, answer: str) -> None:
+# LLM as judge metrics for live traffic, where there's no golden answer to compare against (unlike evals/run_eval.py). Runs off the request thread so the LLM-judge call doesn't add latency to the user-facing response.
+def _score_online(
+    trace_id: str,
+    question: str,
+    answer: str,
+) -> None:
     """Reference-free metrics for live traffic, where there's no golden answer to
     compare against (unlike evals/run_eval.py). Runs off the request thread so the
     LLM-judge call doesn't add latency to the user-facing response.
@@ -62,17 +68,20 @@ def _score_online(trace_id: str, question: str, answer: str) -> None:
         value=bias_result.score,
         data_type="NUMERIC",
     )
-
     try:
         relevancy_metric = EvalMetrics.answer_relevancy_metric()
-        relevancy_metric.measure(LLMTestCase(input=question, actual_output=answer))
+        relevancy_score = relevancy_metric.measure(
+            LLMTestCase(input=question, actual_output=answer)
+        )
+
         client.create_score(
             trace_id=trace_id,
             name="answer_relevancy",
-            value=relevancy_metric.score,
+            value=float(relevancy_score),
             data_type="NUMERIC",
         )
     except Exception as exc:
+        logger.exception("Online answer-relevancy evaluation failed")
         client.create_score(
             trace_id=trace_id,
             name="answer_relevancy_error",
@@ -80,6 +89,7 @@ def _score_online(trace_id: str, question: str, answer: str) -> None:
             data_type="TEXT",
         )
 
+    # Ensure both the numeric score and any diagnostic score are sent.
     client.flush()
 
 
@@ -129,7 +139,9 @@ def ask_with_tools(
 
     if online_eval:
         threading.Thread(
-            target=_score_online, args=(trace_id, question, answer), daemon=True
+            target=_score_online,
+            args=(trace_id, question, answer),
+            daemon=True,
         ).start()
 
     return answer, tool_names

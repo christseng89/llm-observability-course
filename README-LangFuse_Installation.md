@@ -60,6 +60,8 @@ docker compose up -d
 
 <http://localhost:3000>
 
+- Settings => Feature Previews => Redesigned Session View (OFF)
+
 ---
 
 > Install the Langfuse AI skill from github.com/langfuse/skills and use it to add tracing to this application with Langfuse following best practices.
